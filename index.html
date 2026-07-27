@@ -59,7 +59,6 @@
         .math-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 400px; margin: 20px auto; }
         .hidden { display: none !important; }
 
-        /* تنسيق لوحة الأدمن الاحترافية الجديدة */
         .admin-panel-card { background: rgba(15, 15, 25, 0.8); border: 1px solid rgba(255,215,0,0.3); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .admin-stat-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; border: 1px solid var(--border); text-align: center; }
@@ -126,7 +125,6 @@
                     <p style="color: #888; font-size: 0.8rem;">اعثر على الرقم المخفي بدقة.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game4')">العب</button>
                 </div>
-                <!-- الألعاب الجديدة الإضافية لكسر الملل -->
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🧠</div>
                     <h3 style="color: var(--primary)">تحدي الذاكرة</h3>
@@ -144,7 +142,6 @@
             <div id="arena-game-container" class="active-game-box hidden" style="margin-top: 20px;">
                 <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 5px 15px; margin-bottom: 15px; background: #222; color: #aaa; font-size: 0.8rem;">← العودة للقائمة</button>
                 
-                <!-- لعبة 1: ترتيب الكلمات -->
                 <div id="subgame-1" class="subgame hidden">
                     <h2 style="color: var(--secondary)">تحدي ترتيب الكلمات</h2>
                     <div class="difficulty-selector">
@@ -161,7 +158,6 @@
                     </div>
                 </div>
 
-                <!-- لعبة 2: سرعة النقرات -->
                 <div id="subgame-2" class="subgame hidden">
                     <h2 style="color: var(--danger)">تحدي سرعة النقرات</h2>
                     <div style="font-size: 3rem; color: var(--gold); margin: 10px 0;" id="clicker-score">0</div>
@@ -171,7 +167,6 @@
                     <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 180px;" id="clicker-start-btn">ابدأ التحدي</button>
                 </div>
 
-                <!-- لعبة 3: التحدي الرياضي -->
                 <div id="subgame-3" class="subgame hidden">
                     <h2 style="color: var(--success)">التحدي الرياضي السريع</h2>
                     <div class="word-display" id="math-question">5 + 3 = ?</div>
@@ -180,7 +175,6 @@
                     <button class="cyber-btn btn-danger" onclick="skipGame(3)" style="max-width: 170px; margin: 0 auto;">تخطي (-50 XP) ⏭</button>
                 </div>
 
-                <!-- لعبة 4: تخمين الأرقام -->
                 <div id="subgame-4" class="subgame hidden">
                     <h2 style="color: var(--gold)">تخمين الرقم الصحيح</h2>
                     <p style="color: #aaa;" id="guess-range-text">اختر رقماً بين 1 و 10</p>
@@ -196,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- لعبة 5: الذاكرة السريعة (جديدة) -->
                 <div id="subgame-5" class="subgame hidden">
                     <h2 style="color: var(--primary)">تحدي الذاكرة البصرية</h2>
                     <p style="color: #aaa;">احفظ الأرقام التالية ثم اكتبها:</p>
@@ -206,7 +199,6 @@
                     <button class="cyber-btn btn-success hidden" id="memory-check-btn" onclick="checkMemory()" style="max-width: 180px; margin: 0 auto;">تحقق</button>
                 </div>
 
-                <!-- لعبة 6: سباق الكتابة (جديدة) -->
                 <div id="subgame-6" class="subgame hidden">
                     <h2 style="color: var(--secondary)">سباق سرعة الكلمات</h2>
                     <p style="color: #aaa;">اكتب الكلمة التالية بدقة:</p>
@@ -235,7 +227,7 @@
         <div id="tab-admin" class="tab-content">
             <div class="admin-panel-card">
                 <h2 style="color: var(--gold); margin-top:0;">⚡ لوحة الإدارة المتطورة (timassa)</h2>
-                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة والبيانات</p>
+                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة (إخفاء من المتصدرين، حذف الحسابات، أو تعديل النقاط)</p>
                 
                 <div class="admin-stats-grid">
                     <div class="admin-stat-box">
@@ -256,7 +248,7 @@
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
-                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>إدارة النقاط</th></tr>
+                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>الإجراءات (إدارة / إخفاء / حذف)</th></tr>
                         </thead>
                         <tbody id="admin-users-list"></tbody>
                     </table>
@@ -284,7 +276,7 @@
     (function initDB() {
         try {
             let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
-            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true };
+            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: false };
             localStorage.setItem('gw_users_v2', JSON.stringify(db));
         } catch(e) { localStorage.clear(); location.reload(); }
     })();
@@ -313,11 +305,11 @@
             let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
             if(isRegisterMode) {
                 if(db[u]) return notify("الاسم مستخدم مسبقاً", "error");
-                db[u] = { pass: btoa(p), xp: 100, level: 1 };
+                db[u] = { pass: btoa(p), xp: 100, level: 1, hidden: false };
                 localStorage.setItem('gw_users_v2', JSON.stringify(db));
                 loginSuccess(u, db[u]);
             } else {
-                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true };
+                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: false };
                 if(db[u] && db[u].pass === btoa(p)) loginSuccess(u, db[u]);
                 else notify("خطأ في البيانات المدخلة", "error");
             }
@@ -396,7 +388,6 @@
         if(gameNum === 6) initTypingGame();
     }
 
-    // لعبة ترتيب الكلمات (مراحل سهلة وواضحة)
     const wordList = {
         very_easy: ["تفاح", "قلم", "باب", "شمس"],
         easy: ["حاسوب", "مكتبة", "مطرقة", "طاولة"],
@@ -428,7 +419,6 @@
         } else { notify("إجابة خاطئة، حاول مجدداً", "error"); }
     }
 
-    // لعبة سرعة النقرات
     let clickerScore = 0, clickerTimer = 10, clickerInterval = null, isClickerActive = false;
     function startClickerGame() {
         if(isClickerActive) return;
@@ -452,7 +442,6 @@
     }
     function hitClicker() { if(isClickerActive) document.getElementById('clicker-score').innerText = ++clickerScore; }
 
-    // لعبة التحدي الرياضي
     function initMathGame() {
         let n1 = Math.floor(Math.random() * 10) + 1;
         let n2 = Math.floor(Math.random() * 10) + 1;
@@ -477,7 +466,6 @@
         });
     }
 
-    // لعبة تخمين الأرقام
     function setGuessDiff(max) {
         currentMaxGuess = max;
         targetNumber = Math.floor(Math.random() * max) + 1;
@@ -494,7 +482,6 @@
         } else { notify(val > targetNumber ? "الرقم المخفي أقل 📉" : "الرقم المخفي أكبر 📈", "error"); }
     }
 
-    // لعبة الذاكرة البصرية الجديدة
     function startMemoryGame() {
         memorySequence = Math.floor(1000 + Math.random() * 9000).toString();
         let display = document.getElementById('memory-display');
@@ -522,7 +509,6 @@
         document.getElementById('memory-display').innerText = "اضغط للبدء";
     }
 
-    // لعبة سباق الكتابة الجديدة
     const typingWords = ["تحدي", "منصة", "ذكاء", "سرعة", "ألعاب", "نجاح", "مهارة"];
     let currentTypingWord = "";
     function initTypingGame() {
@@ -543,7 +529,11 @@
         let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
         let tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
-        Object.entries(db).sort((a,b)=>b[1].xp - a[1].xp).forEach(([name, user], idx) => {
+        
+        // فلترة المستخدمين بحيث لا يتم عرض من تم إخفاؤهم
+        let filteredUsers = Object.entries(db).filter(([name, user]) => !user.hidden);
+
+        filteredUsers.sort((a,b)=>b[1].xp - a[1].xp).forEach(([name, user], idx) => {
             tbody.innerHTML += `<tr><td>#${idx+1}</td><td>${name}</td><td>مستوى ${user.level || 1}</td><td style="color:var(--gold);">${user.xp} XP</td></tr>`;
         });
     }
@@ -562,14 +552,23 @@
 
         for(let name in db) {
             if(query && !name.toLowerCase().includes(query)) continue;
+            let isHidden = db[name].hidden;
+            let hideBtnText = isHidden ? "إظهار بالمتصدرين 👁️" : "إخفاء من المتصدرين 🚫";
+            let hideBtnClass = isHidden ? "btn-success" : "btn-gold";
+            
+            let hideBtn = name === 'timassa' ? '' : `<button class="cyber-btn ${hideBtnClass}" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminToggleHide('${name}')">${hideBtnText}</button>`;
+            let deleteBtn = name === 'timassa' ? '' : `<button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminDeleteUser('${name}')">حذف ❌</button>`;
+            
             tbody.innerHTML += `
                 <tr>
-                    <td>${name}</td>
+                    <td>${name} ${isHidden ? '<span style="color:var(--danger); font-size:0.7rem;">(مخفي)</span>' : ''}</td>
                     <td style="color:var(--gold);">${db[name].xp} XP</td>
                     <td>مستوى ${db[name].level || 1}</td>
                     <td>
                         <button class="cyber-btn btn-gold" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', 500)">+500</button>
                         <button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', -500)">-500</button>
+                        ${hideBtn}
+                        ${deleteBtn}
                     </td>
                 </tr>`;
         }
@@ -589,6 +588,29 @@
             }
             renderAdminPanel();
             notify(`تم تعديل رصيد ${name} بنجاح`, "gold");
+        }
+    }
+
+    function adminToggleHide(name) {
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+        if(db[name]) {
+            db[name].hidden = !db[name].hidden;
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
+            renderAdminPanel();
+            renderLeaderboard();
+            notify(db[name].hidden ? `تم إخفاء ${name} من لوحة المتصدرين` : `تم إظهار ${name} في لوحة المتصدرين`, "gold");
+        }
+    }
+
+    function adminDeleteUser(name) {
+        if(name === 'timassa') return notify("لا يمكنك حذف حساب الأدمن الرئيسي!", "error");
+        if(confirm(`هل أنت متأكد من حذف حساب اللاعب (${name}) نهائياً؟`)) {
+            let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+            delete db[name];
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
+            renderAdminPanel();
+            renderLeaderboard();
+            notify(`تم حذف حساب ${name} بنجاح`, "error");
         }
     }
 
