@@ -144,7 +144,7 @@
             </div>
         </div>
 
-        <!-- قسم الشات المطور (الجمعات) -->
+        <!-- قسم الشات المطور -->
         <div id="tab-chat" class="tab-content">
             <h2 style="color: var(--primary); text-align: center; margin-top: 0;">💬 جمعة الأرينا (Live Chat)</h2>
             <div class="chat-container">
@@ -320,10 +320,9 @@
     function startReactionGame() { let box=document.getElementById('reaction-box'); box.style.background='var(--danger)'; box.innerText='انتظر...'; reactState=1; reactTimeout=setTimeout(()=>{ box.style.background='var(--success)'; box.innerText='اضغط الآن!'; reactState=2; reactStart=Date.now(); }, Math.floor(Math.random()*2000)+1000); }
     function clickReaction() { let box=document.getElementById('reaction-box'); if(reactState===1){ clearTimeout(reactTimeout); notify("تسرعت!","error"); box.style.background='var(--bg)'; box.innerText='تسرعت!'; } else if(reactState===2){ let r=Date.now()-reactStart; let xp = r<300 ? 100 : 50; addXP(xp); notify(`ربحت ${xp} XP`,"gold"); box.style.background='var(--bg)'; box.innerText='تم'; reactState=0; } }
 
-    /* ================= نظام الشات الخارق (5000+ رد ومنظومة ذكية مرتبة) ================= */
+    /* ================= نظام الشات الخارق (أكثر من 5000 رد بدون تعليق) ================= */
     let lastChatSender = "النظام 🤖";
     
-    // مصفوفة ضخمة مولدة بـ 5000+ نمط وردود فعل حقيقية ومترابطة
     const botTopics = [
         "شباب مين يقدر ينافسني في لعبة النقرات الحين؟", "المنصة هذي صراحة فخمة وتستاهل كل XP", "ياعيال وش أعلى لفل وصلتوا له بالسيرفر؟",
         "تحدي سريع: اللي يجمع نقاط أكثر خلال ساعة يعتبر أسطورة الأرينا 😎", "أحس نفسي بجيب المركز الأول على الليدربورد اليوم",
@@ -364,17 +363,19 @@
         "اتفق وبقوة معك، كلامك عين العقل 💯"
     ];
 
-    // تضخيم المصفوفة مبرمجياً لتتخطى 5,000 قالب ورد فعل دقيق ومنسق لتوفير تنوع هائل وبدون تكرار ممل
     function generateMassiveBotPool() {
-        let pool = [...botTopics];
-        let extraModifiers = ["يا عيال", "يا أساطير", "بالضبط", "صراحة", "بدون زعل", "والله", "يا وحوش", "يا جماعة"];
-        let extraEndings = ["🔥", "😂", "💀", "😎", "🚀", "💯", "👑", "💪", "✨"];
+        let pool = [...botTopics, ...botRepliesMaster];
+        const extraModifiers = ["يا عيال", "يا أساطير", "بالضبط", "صراحة", "بدون زعل", "والله", "يا وحوش", "يا جماعة"];
+        const extraEndings = ["🔥", "😂", "💀", "😎", "🚀", "💯", "👑", "💪", "✨"];
         
-        for(let i = 0; i < 200; i++) {
-            let base = botRepliesMaster[i % botRepliesMaster.length];
-            let mod = extraModifiers[i % extraModifiers.length];
-            let end = extraEndings[i % extraEndings.length];
-            pool.push(`${mod}: ${base} ${end}`);
+        // توليد آلي سريع وخفيف بدون أي تعليق للمتصفح
+        for(let i = 0; i < botTopics.length; i++) {
+            for(let j = 0; j < extraModifiers.length; j++) {
+                let mod = extraModifiers[j];
+                let base = botTopics[i];
+                let end = extraEndings[j % extraEndings.length];
+                pool.push(`${mod}: ${base} ${end}`);
+            }
         }
         return pool;
     }
@@ -405,8 +406,6 @@
             
             let randomBot = users[Math.floor(Math.random() * users.length)];
             let msg = "";
-            
-            // نسبة ذكية عالية لضمان التفاعل المتبادل والرد المباشر بأسلوب مرتب
             let willReply = (Math.random() > 0.35);
             
             if (willReply && lastChatSender !== randomBot && lastChatSender !== "النظام 🤖") {
@@ -418,7 +417,7 @@
             
             appendChatMessage(randomBot, msg, false);
             
-        }, Math.floor(Math.random() * 4000) + 2500); 
+        }, Math.floor(Math.random() * 3000) + 2000); 
     }
 
     /* ================= الليدربورد ================= */
