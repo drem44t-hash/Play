@@ -1,0 +1,22 @@
+// توليد حسابات وهمية للموقع
+const fakeUsers = [
+    { username: "Fahad_99", points: 450, level: 5 },
+    { username: "Nasser_Pro", points: 320, level: 4 },
+    { username: "SultanX", points: 210, level: 3 },
+    { username: "Rakan_Gamer", points: 150, level: 2 },
+    { username: "WizardDev", points: 500, level: 6 }
+];
+
+// جلب المستخدمين الحاليين أو إنشاء قائمة جديدة
+let users = JSON.parse(localStorage.getItem('gw_users')) || [];
+
+// دمج الحسابات الوهمية مع الحسابات الموجودة
+fakeUsers.forEach(newUser => {
+    if (!users.some(u => u.username === newUser.username)) {
+        users.push(newUser);
+    }
+});
+
+// حفظ البيانات وتحديث الصفحة
+localStorage.setItem('gw_users', JSON.stringify(users));
+location.reload();
