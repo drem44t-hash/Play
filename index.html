@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER ARENA | منصة المسابقات والسحوبات الكبرى</title>
+    <title>CYBER ARENA | المنصة السيبرانية الكبرى</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00f2fe; --secondary: #4facfe; --gold: #ffd700; --danger: #ff4b2b;
-            --bg: #050505; --glass: rgba(255, 255, 255, 0.07); --border: rgba(255, 255, 255, 0.1);
+            --bg: #050505; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; outline: none; user-select: none; -webkit-tap-highlight-color: transparent; }
         
@@ -17,72 +17,62 @@
             min-height: 100vh; overflow-x: hidden;
             background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.1) 0%, transparent 20%),
                               radial-gradient(circle at 90% 80%, rgba(79, 172, 254, 0.1) 0%, transparent 20%);
-            animation: bgPulse 10s infinite alternate;
         }
-        @keyframes bgPulse { 0% { background-size: 100% 100%; } 100% { background-size: 110% 110%; } }
 
-        /* --- 🔔 نظام الإشعارات (Toast) --- */
+        /* نظام الإشعارات */
         #toast-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background: rgba(20, 20, 30, 0.95); backdrop-filter: blur(10px); color: white; padding: 15px; border-radius: 12px; border-right: 5px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: space-between; animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast { background: rgba(20, 20, 30, 0.95); backdrop-filter: blur(10px); color: white; padding: 15px; border-radius: 12px; border-right: 5px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: space-between; animation: slideDown 0.4s ease; }
         .toast.error { border-color: var(--danger); } .toast.gold { border-color: var(--gold); }
         @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* --- 🔐 شاشة الدخول --- */
-        .auth-screen { position: fixed; inset: 0; background: rgba(5,5,5,0.9); backdrop-filter: blur(20px); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        /* شاشة الدخول */
+        .auth-screen { position: fixed; inset: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(20px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 30px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(0, 242, 254, 0.1); position: relative; overflow: hidden; }
         .auth-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
         
-        .input-group { margin: 20px 0; position: relative; }
-        .cyber-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; font-size: 1rem; transition: 0.3s; text-align: center; font-family: 'Cairo'; }
+        .cyber-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; font-size: 1rem; text-align: center; font-family: 'Cairo'; margin: 10px 0; transition: 0.3s; }
         .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
         
-        .cyber-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; font-family: 'Cairo'; }
+        .cyber-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Cairo'; }
         .btn-main { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: #000; }
         .btn-gold { background: linear-gradient(45deg, var(--gold), #ffae00); color: #000; }
         .btn-danger { background: linear-gradient(45deg, var(--danger), #ff8008); color: white; }
         .cyber-btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
-        .cyber-btn:active { transform: scale(0.98); }
 
-        .auth-switch { margin-top: 20px; color: #888; font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
-
-        /* --- 🎮 واجهة المنصة --- */
-        .app-container { max-width: 950px; margin: 0 auto; padding: 20px; display: none; opacity: 0; transition: 1s; }
+        /* الهيكل العام للمنصة */
+        .app-container { max-width: 1000px; margin: 0 auto; padding: 20px; display: none; opacity: 0; transition: 0.8s; }
         .app-container.visible { display: block; opacity: 1; }
 
-        .header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 15px; backdrop-filter: blur(10px); }
+        .user-info { display: flex; align-items: center; gap: 12px; font-weight: bold; }
         .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; font-size: 1.2rem; }
 
-        .level-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 8px 15px; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; min-width: 180px; }
-        .progress-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--gold)); width: 0%; transition: 0.3s; }
+        /* شريط التنقل الرئيسي */
+        .nav-dock { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 20px; border: 1px solid var(--border); flex-wrap: wrap; }
+        .dock-btn { background: transparent; border: none; color: #888; padding: 10px 18px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; font-family: 'Cairo'; font-size: 0.95rem; }
+        .dock-btn.active { background: var(--glass); color: white; border: 1px solid var(--border); box-shadow: 0 0 15px rgba(0,242,254,0.1); }
 
-        /* شريط التنقل */
-        .nav-dock { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; flex-wrap: wrap; border: 1px solid var(--border); }
-        .dock-btn { background: transparent; border: none; color: #888; padding: 8px 16px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; font-family: 'Cairo', sans-serif; font-size: 0.9rem; }
-        .dock-btn.active { background: var(--glass); color: white; box-shadow: 0 0 15px rgba(255,255,255,0.05); border: 1px solid var(--border); }
-
-        .tab-content { display: none; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .game-box { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 30px 20px; text-align: center; position: relative; backdrop-filter: blur(10px); }
-        .word-display { font-size: 2.8rem; font-weight: 900; color: var(--gold); letter-spacing: 6px; margin: 20px 0; text-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        /* ساحة الألعاب الجماعية */
+        .games-hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .game-card { background: var(--glass); border: 1px solid var(--border); border-radius: 25px; padding: 25px; text-align: center; backdrop-filter: blur(10px); transition: 0.3s; }
+        .game-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,242,254,0.1); }
 
-        /* الذاكرة */
-        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; }
+        .active-game-box { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 30px; text-align: center; backdrop-filter: blur(10px); }
+        .word-display { font-size: 2.5rem; font-weight: 900; color: var(--gold); letter-spacing: 6px; margin: 20px 0; }
+
+        /* جدول المتصدرين والأدمن */
+        .cyber-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: right; }
+        .cyber-table th, .cyber-table td { padding: 12px; border-bottom: 1px solid #222; font-size: 0.95rem; }
+        .cyber-table th { color: var(--primary); }
+
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 380px; margin: 20px auto; }
         .memory-card { background: rgba(0,242,254,0.1); border: 1px solid var(--border); height: 70px; border-radius: 12px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
         .memory-card.flipped { background: var(--primary); color: #000; font-weight: bold; }
 
-        /* لوحة المتصدرين */
-        .leaderboard-table, .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
-        .leaderboard-table th, .leaderboard-table td, .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.95rem; }
-        .leaderboard-table th, .admin-table th { color: var(--primary); }
-
-        .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .store-item { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border: 1px solid var(--border); transition: 0.3s; text-align: center; }
-        .store-item:hover { border-color: var(--primary); transform: translateY(-5px); }
-        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -90,21 +80,21 @@
 
     <div id="toast-box"></div>
 
+    <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
             <h1 style="background: -webkit-linear-gradient(var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin-bottom: 10px;">CYBER ARENA</h1>
-            <p style="color: #aaa; margin-bottom: 30px;">منصة المسابقات والسحوبات الكبرى</p>
+            <p style="color: #aaa; margin-bottom: 25px;">المنصة السيبرانية الجماعية الكبرى</p>
             
             <input type="text" id="username" class="cyber-input" placeholder="اسم المستخدم" autocomplete="off">
-            <div class="input-group">
-                <input type="password" id="password" class="cyber-input" placeholder="كلمة المرور">
-            </div>
+            <input type="password" id="password" class="cyber-input" placeholder="كلمة المرور">
             
-            <button class="cyber-btn btn-main" onclick="handleLogin()">دخول النظام</button>
-            <div class="auth-switch" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</div>
+            <button class="cyber-btn btn-main" onclick="handleLogin()" style="margin-top: 15px;">دخول الجلسة</button>
+            <div style="margin-top: 20px; color: #888; font-size: 0.9rem; cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()" id="auth-switch-text">ليس لديك حساب؟ إنشاء حساب جديد</div>
         </div>
     </div>
 
+    <!-- واجهة المنصة الرئيسية -->
     <div id="app" class="app-container">
         <div class="header-bar">
             <div class="user-info">
@@ -114,94 +104,94 @@
                     <div id="display-xp" style="color: var(--primary); font-size: 1.1rem; font-weight: 900;">0 XP</div>
                 </div>
             </div>
-
-            <!-- معلومات المستوى وتخطي المرحلة بـ 500 نقطة -->
-            <div class="level-box">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                    <span id="display-level" style="color: var(--gold);">المستوى: 1</span>
-                    <span style="cursor: pointer; color: var(--primary); text-decoration: underline;" onclick="skipLevel()">⚡ تخطي (500 XP)</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="level-progress"></div></div>
-            </div>
-
-            <button onclick="logout()" style="background: none; border: 1px solid #333; color: var(--danger); padding: 5px 15px; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">خروج</button>
+            <div style="color: var(--gold); font-weight: bold;" id="display-level">المستوى: 1</div>
+            <button onclick="logout()" style="background: none; border: 1px solid #333; color: var(--danger); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">خروج</button>
         </div>
 
-        <!-- شريط الألعاب والخيارات -->
+        <!-- شريط التنقل الجماعي -->
         <div class="nav-dock">
-            <button class="dock-btn active" onclick="switchTab('game1', this)">🧩 فك التشفير</button>
-            <button class="dock-btn" onclick="switchTab('game2', this)">🧠 الذاكرة</button>
-            <button class="dock-btn" onclick="switchTab('game3', this)">⚡ النقرات</button>
-            <button class="dock-btn" onclick="switchTab('game4', this)">🎯 تخمين الرقم</button>
+            <button class="dock-btn active" onclick="switchTab('hub', this)">🎮 ساحة الألعاب الجماعية</button>
             <button class="dock-btn" onclick="switchTab('leaderboard', this)" style="color: var(--gold);">🏆 المتصدرين</button>
-            <button class="dock-btn" onclick="switchTab('store', this)">🛒 المتجر</button>
-            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ لوحة الأدمن</button>
+            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ لوحة تحكم الأدمن</button>
         </div>
 
-        <!-- اللعبة الأولى: فك التشفير -->
-        <div id="tab-game1" class="tab-content active">
-            <div class="game-box">
-                <h2 style="color: var(--secondary)">لعبة فك التشفير</h2>
-                <p style="color: #888; font-size: 0.9rem;">رتب حروف الكلمة المبعثرة لاكتشاف كلمة المرور</p>
-                <div class="word-display" id="solo-word">----</div>
-                <input type="text" id="solo-input" class="cyber-input" placeholder="أدخل الكلمة هنا..." style="max-width: 400px; margin-bottom: 20px;" onkeydown="if(event.key==='Enter') checkSolo()">
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 180px;">تحقق (+150 XP)</button>
-                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+        <!-- 1. ساحة الألعاب الجماعية (جميع الألعاب في مكان واحد) -->
+        <div id="tab-hub" class="tab-content active">
+            <div class="games-hub" id="main-games-hub">
+                <div class="game-card">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🧩</div>
+                    <h3 style="color: var(--secondary)">فك التشفير السيبراني</h3>
+                    <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">اكتشف الكلمة السرية المبعثرة واكسب النقاط الفورية.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game1')">العب الآن</button>
+                </div>
+                <div class="game-card">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🧠</div>
+                    <h3 style="color: var(--primary)">ذاكرة الأكواد</h3>
+                    <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">طابق الأكواد المتشابهة لاختبار قوة الذاكرة السيبرانية.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game2')">العب الآن</button>
+                </div>
+                <div class="game-card">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">⚡</div>
+                    <h3 style="color: var(--danger)">سرعة الهاكر</h3>
+                    <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">اضغط بأسرع ما يمكنك خلال 10 ثوانٍ لحصد أعلى رصيد.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game3')">العب الآن</button>
+                </div>
+                <div class="game-card">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🎯</div>
+                    <h3 style="color: var(--gold)">تخمين الكود السري</h3>
+                    <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">خمن الرقم الصحيح بين 1 و 10 وضاعف نقاطك.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game4')">العب الآن</button>
                 </div>
             </div>
-        </div>
 
-        <!-- اللعبة الثانية: ذاكرة السيبر -->
-        <div id="tab-game2" class="tab-content">
-            <div class="game-box">
-                <h2 style="color: var(--primary)">ذاكرة السيبر (مطابقة الأكواد)</h2>
-                <p style="color: #888; font-size: 0.9rem;">ابحث عن الأكواد المتطابقة واكسب النقاط</p>
-                <div class="memory-grid" id="memory-grid"></div>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                    <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 180px;">إعادة اللعبة</button>
-                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+            <!-- حاويات الألعاب الفردية داخل الساحة -->
+            <div id="arena-game-container" class="active-game-box hidden" style="margin-top: 20px;">
+                <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 5px 15px; margin-bottom: 15px; background: #222; color: #aaa; font-size: 0.85rem;">← العودة لساحة الألعاب</button>
+                
+                <!-- لعبة 1 -->
+                <div id="subgame-1" class="subgame hidden">
+                    <h2 style="color: var(--secondary)">فك التشفير السيبراني</h2>
+                    <div class="word-display" id="solo-word">----</div>
+                    <input type="text" id="solo-input" class="cyber-input" placeholder="أدخل الكلمة هنا..." style="max-width: 350px; margin: 0 auto 15px auto;" onkeydown="if(event.key==='Enter') checkSolo()">
+                    <br>
+                    <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">تحقق (+150 XP)</button>
                 </div>
-            </div>
-        </div>
 
-        <!-- اللعبة الثالثة: سرعة الهاكر -->
-        <div id="tab-game3" class="tab-content">
-            <div class="game-box">
-                <h2 style="color: var(--danger)">سرعة الهاكر</h2>
-                <p style="color: #888; font-size: 0.9rem;">اضغط على الزر بأسرع ما يمكنك خلال 10 ثوانٍ!</p>
-                <div style="font-size: 3rem; color: var(--gold); margin: 15px 0;" id="clicker-score">0</div>
-                <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 20px;" id="clicker-timer">الوقت: 10 ثوانٍ</div>
-                <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 250px; font-size: 1.3rem;" disabled>انقر بسرعة!</button>
-                <br>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <!-- لعبة 2 -->
+                <div id="subgame-2" class="subgame hidden">
+                    <h2 style="color: var(--primary)">ذاكرة الأكواد</h2>
+                    <div class="memory-grid" id="memory-grid"></div>
+                    <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 180px; margin-top: 10px;">إعادة تعيين</button>
+                </div>
+
+                <!-- لعبة 3 -->
+                <div id="subgame-3" class="subgame hidden">
+                    <h2 style="color: var(--danger)">سرعة الهاكر</h2>
+                    <div style="font-size: 3rem; color: var(--gold); margin: 10px 0;" id="clicker-score">0</div>
+                    <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;" id="clicker-timer">الوقت: 10 ثوانٍ</div>
+                    <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 220px; font-size: 1.2rem;" disabled>انقر بسرعة!</button>
+                    <br><br>
                     <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 180px;" id="clicker-start-btn">ابدأ التحدي</button>
-                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+                </div>
+
+                <!-- لعبة 4 -->
+                <div id="subgame-4" class="subgame hidden">
+                    <h2 style="color: var(--gold)">تخمين الكود السري</h2>
+                    <div class="word-display" id="guess-hint">?</div>
+                    <input type="number" id="guess-input" class="cyber-input" placeholder="رقم من 1 إلى 10" style="max-width: 300px; margin: 0 auto 15px auto;">
+                    <br>
+                    <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 200px;">تخمين (+300 XP)</button>
                 </div>
             </div>
         </div>
 
-        <!-- اللعبة الرابعة: تخمين الرقم -->
-        <div id="tab-game4" class="tab-content">
-            <div class="game-box">
-                <h2 style="color: var(--gold)">تخمين الرقم السري</h2>
-                <p style="color: #888; font-size: 0.9rem;">خمن رقماً بين 1 و 10 واكسب نقاط مضاعفة!</p>
-                <div class="word-display" id="guess-hint">?</div>
-                <input type="number" id="guess-input" class="cyber-input" placeholder="اكتب رقماً من 1 إلى 10" style="max-width: 300px; margin-bottom: 20px;">
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 180px;">تخمين (+300 XP)</button>
-                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- لوحة المتصدرين والمختمين -->
+        <!-- 2. لوحة المتصدرين -->
         <div id="tab-leaderboard" class="tab-content">
-            <div class="game-box">
-                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين والمختمين</h2>
-                <p style="color: #888; font-size: 0.9rem;">اللاعبون الحاصلون على النجمة ورصيد لا نهائي للمسابقات</p>
+            <div class="active-game-box">
+                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين السيبرانيين</h2>
+                <p style="color: #888; font-size: 0.9rem;">أفضل اللاعبين المشاركين في الجلسة</p>
                 <div style="overflow-x: auto;">
-                    <table class="leaderboard-table">
+                    <table class="cyber-table">
                         <thead>
                             <tr>
                                 <th>الترتيب</th>
@@ -216,23 +206,18 @@
             </div>
         </div>
 
-        <!-- متجر العناصر -->
-        <div id="tab-store" class="tab-content">
-            <div class="store-grid" id="store-container"></div>
-        </div>
-
-        <!-- لوحة التحكم للإدمن -->
+        <!-- 3. لوحة تحكم الأدمن (مع أدوات الإنقاص والطرد) -->
         <div id="tab-admin" class="tab-content">
-            <div class="game-box" style="text-align: right;">
-                <h2 style="color: var(--gold); margin-bottom: 20px;">⚡ لوحة تحكم الأدمن (timassa)</h2>
-                <p style="color: #888; font-size: 0.9rem; margin-bottom: 15px;">من هنا يمكنك إعطاء نقاط السحب لأي لاعب أو منحه شارة الختم والنقاط النهائية</p>
+            <div class="active-game-box" style="text-align: right;">
+                <h2 style="color: var(--gold); margin-bottom: 10px;">⚡ لوحة تحكم الأدمن السيبراني (timassa)</h2>
+                <p style="color: #888; font-size: 0.9rem; margin-bottom: 20px;">التحكم الكامل بجميع اللاعبين في الجلسة (إضافة/إنقاص عملات، ختم، أو طرد فوري)</p>
                 <div style="overflow-x: auto;">
-                    <table class="admin-table">
+                    <table class="cyber-table">
                         <thead>
                             <tr>
                                 <th>المستخدم</th>
-                                <th>النقاط</th>
-                                <th>الإجراءات</th>
+                                <th>الرصيد الحالي</th>
+                                <th>الإجراءات الإدارية</th>
                             </tr>
                         </thead>
                         <tbody id="admin-users-list"></tbody>
@@ -248,14 +233,10 @@
     let soloTarget = "";
     let targetNumber = Math.floor(Math.random() * 10) + 1;
 
-    // تهيئة حساب الأدمن الافتراضي بمستوى ماكس ونقاط لا نهائية وإخفائه من المتصدرين
+    // تهيئة قاعدة البيانات (بدون الحساب التجريبي القديم)
     (function initDatabase() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
-        usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, inventory: [1,2,3], isAdmin: true, isLegend: true };
-        
-        if (!usersDB['legend_pro']) {
-            usersDB['legend_pro'] = { pass: btoa('123456'), xp: 999999999999, level: 99, inventory: [1,2,3], isAdmin: false, isLegend: true };
-        }
+        usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, isAdmin: true, isLegend: true };
         localStorage.setItem('cyber_users', JSON.stringify(usersDB));
     })();
 
@@ -263,22 +244,21 @@
         const box = document.getElementById('toast-box');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.innerHTML = `<span>${msg}</span> <span>✖</span>`;
+        toast.innerHTML = `<span>${msg}</span><span>✖</span>`;
         box.appendChild(toast);
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3000);
     }
 
     function toggleAuthMode() {
         isRegisterMode = !isRegisterMode;
-        const btn = document.querySelector('.auth-switch');
-        const mainBtn = document.querySelector('.auth-screen .btn-main');
-        
+        const mainBtn = document.querySelector('.auth-screen .cyber-btn');
+        const switchText = document.getElementById('auth-switch-text');
         if(isRegisterMode) {
             mainBtn.innerText = "إنشاء حساب جديد";
-            btn.innerText = "لديك حساب بالفعل؟ تسجيل دخول";
+            switchText.innerText = "لديك حساب بالفعل؟ تسجيل دخول";
         } else {
-            mainBtn.innerText = "دخول النظام";
-            btn.innerText = "ليس لديك حساب؟ إنشاء حساب جديد";
+            mainBtn.innerText = "دخول الجلسة";
+            switchText.innerText = "ليس لديك حساب؟ إنشاء حساب جديد";
         }
     }
 
@@ -290,23 +270,23 @@
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
 
         if (isRegisterMode) {
-            if(u.toLowerCase() === 'timassa') return notify("هذا الاسم مخصص للإدارة!", "error");
-            if(usersDB[u]) return notify("اسم المستخدم محجوز!", "error");
+            if(u.toLowerCase() === 'timassa') return notify("هذا الاسم مخصص للإدارة حصرياً!", "error");
+            if(usersDB[u]) return notify("اسم المستخدم مستخدم مسبقاً!", "error");
             
-            usersDB[u] = { pass: btoa(p), xp: 100, level: 1, inventory: [], isAdmin: false, isLegend: false };
+            usersDB[u] = { pass: btoa(p), xp: 100, level: 1, isAdmin: false, isLegend: false };
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-            notify("تم إنشاء الحساب بنجاح!", "gold");
+            notify("تم إنشاء الحساب والانضمام للجلسة بنجاح!", "gold");
             loginSuccess(u, usersDB[u]);
         } else {
             if(u.toLowerCase() === 'timassa') {
-                usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, inventory: [1,2,3], isAdmin: true, isLegend: true };
+                usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, isAdmin: true, isLegend: true };
                 localStorage.setItem('cyber_users', JSON.stringify(usersDB));
             }
             if(usersDB[u] && usersDB[u].pass === btoa(p)) {
                 notify("تم تسجيل الدخول بنجاح", "gold");
                 loginSuccess(u, usersDB[u]);
             } else {
-                notify("اسم المستخدم أو كلمة المرور خطأ", "error");
+                notify("بيانات الدخول غير صحيحة", "error");
             }
         }
     }
@@ -318,11 +298,10 @@
             currentUser.level = 999;
             currentUser.isAdmin = true;
         }
-        localStorage.setItem('cyber_current_user', name); 
+        localStorage.setItem('cyber_current_user', name);
         
         document.getElementById('auth-screen').style.opacity = '0';
         setTimeout(() => document.getElementById('auth-screen').style.display = 'none', 500);
-        
         document.getElementById('app').classList.add('visible');
         
         if(currentUser.name === 'timassa' || currentUser.isAdmin) {
@@ -334,7 +313,6 @@
         updateUI();
         initSoloGame();
         initMemoryGame();
-        renderLeaderboard();
     }
 
     function logout() {
@@ -352,17 +330,11 @@
 
     function updateUI() {
         document.getElementById('display-name').innerText = currentUser.name + (currentUser.isLegend ? " ⭐" : "");
-        
         let xpDisplay = currentUser.xp > 999999 ? "∞ (لا نهائي)" : `${currentUser.xp.toLocaleString()} XP`;
         document.getElementById('display-xp').innerText = xpDisplay;
-        
         document.getElementById('avatar-char').innerText = currentUser.name.charAt(0).toUpperCase();
         document.getElementById('display-level').innerText = currentUser.name === 'timassa' ? "المستوى: MAX" : `المستوى: ${currentUser.level}`;
-        
-        let progressPercent = currentUser.name === 'timassa' ? 100 : (currentUser.level * 10) % 100;
-        document.getElementById('level-progress').style.width = `${progressPercent}%`;
 
-        renderStore();
         renderLeaderboard();
         if(currentUser.name === 'timassa' || currentUser.isAdmin) {
             renderAdminPanel();
@@ -373,33 +345,46 @@
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.add('active');
         document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        if(btn) btn.classList.add('active');
         if(tab === 'leaderboard') renderLeaderboard();
     }
 
-    // --- نظام المستويات والتخطي بـ 500 نقطة ---
+    // إدارة فتح وإغلاق الألعاب في الساحة الجماعية
+    function openGame(gameId) {
+        document.getElementById('main-games-hub').classList.add('hidden');
+        document.getElementById('arena-game-container').classList.remove('hidden');
+        document.querySelectorAll('.subgame').forEach(s => s.classList.add('hidden'));
+        
+        if(gameId === 'game1') document.getElementById('subgame-1').classList.remove('hidden');
+        if(gameId === 'game2') document.getElementById('subgame-2').classList.remove('hidden');
+        if(gameId === 'game3') document.getElementById('subgame-3').classList.remove('hidden');
+        if(gameId === 'game4') document.getElementById('subgame-4').classList.remove('hidden');
+    }
+
+    function closeGame() {
+        document.getElementById('arena-game-container').classList.add('hidden');
+        document.getElementById('main-games-hub').classList.remove('hidden');
+    }
+
     function addXP(amount) {
-        if(currentUser.name === 'timassa') return; // الأدمن ماكس دائماً
+        if(currentUser.name === 'timassa') return;
         currentUser.xp += amount;
         currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
         saveProgress();
     }
 
-    function skipLevel() {
-        if(currentUser.name === 'timassa') {
-            return notify("حساب الأدمن في المستوى الأقصى مسبقاً!", "gold");
-        }
-        if(currentUser.xp >= 500) {
-            currentUser.xp -= 500;
-            currentUser.level += 1;
-            notify(`تم تخطي المرحلة والمستوى بنجاح وأصبح مستواك: ${currentUser.level}!`, "gold");
-            saveProgress();
-        } else {
-            notify("رصيدك لا يكفي لتخطي المرحلة (تحتاج 500 XP)", "error");
+    function saveProgress() {
+        updateUI();
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        if (usersDB[currentUser.name]) {
+            usersDB[currentUser.name].xp = currentUser.xp;
+            usersDB[currentUser.name].level = currentUser.level;
+            usersDB[currentUser.name].isLegend = currentUser.isLegend;
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
         }
     }
 
-    // --- 1. فك التشفير ---
+    // منطق الألعاب
     function initSoloGame() {
         const words = ["حاسوب", "ذكاء", "شبكة", "نظام", "كود", "بيانات", "تشفير", "سيرفر", "خوارزمية", "برمجة"];
         soloTarget = words[Math.floor(Math.random() * words.length)];
@@ -418,7 +403,6 @@
         }
     }
 
-    // --- 2. ذاكرة السيبر ---
     let memoryIcons = ["💻", "🛡️", "⚡", "👑", "🔥", "💎"];
     let flippedCards = [];
     let matchedPairs = 0;
@@ -428,7 +412,6 @@
         grid.innerHTML = "";
         flippedCards = [];
         matchedPairs = 0;
-        
         let deck = [...memoryIcons, ...memoryIcons].sort(() => Math.random() - 0.5);
 
         deck.forEach((icon, index) => {
@@ -444,7 +427,6 @@
 
     function flipMemoryCard(card, index, icon) {
         if (card.classList.contains('flipped') || flippedCards.length >= 2) return;
-        
         card.classList.add('flipped');
         card.innerText = icon;
         flippedCards.push({ card, icon, index });
@@ -469,7 +451,6 @@
         }
     }
 
-    // --- 3. سرعة الهاكر ---
     let clickerScore = 0;
     let clickerTimer = 10;
     let clickerInterval = null;
@@ -493,7 +474,6 @@
                 isClickerActive = false;
                 document.getElementById('clicker-btn').setAttribute('disabled', 'true');
                 document.getElementById('clicker-start-btn').removeAttribute('disabled');
-                
                 let earnedXP = clickerScore * 15;
                 addXP(earnedXP);
                 notify(`انتهى الوقت! حصدت ${clickerScore} نقرة (+${earnedXP} XP)`, "gold");
@@ -507,14 +487,12 @@
         document.getElementById('clicker-score').innerText = clickerScore;
     }
 
-    // --- 4. تخمين الرقم السري ---
     function checkGuess() {
         let val = parseInt(document.getElementById('guess-input').value);
         if(isNaN(val)) return notify("الرجاء إدخال رقم صحيح", "error");
-
         if(val === targetNumber) {
             addXP(500);
-            notify("مبروك! لقد خمنت الرقم الصحيح +500 XP", "gold");
+            notify("ممتاز! لقد خمنت الرقم الصحيح +500 XP", "gold");
             targetNumber = Math.floor(Math.random() * 10) + 1;
             document.getElementById('guess-input').value = "";
         } else {
@@ -522,13 +500,11 @@
         }
     }
 
-    // --- لوحة المتصدرين (مع إخفاء الأدمن تماماً) ---
     function renderLeaderboard() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         const tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
 
-        // استثناء حساب الأدمن (timassa) من قائمة المتصدرين للمشاركين
         let sortedUsers = Object.entries(usersDB)
             .filter(([username]) => username.toLowerCase() !== 'timassa')
             .sort((a, b) => b[1].xp - a[1].xp);
@@ -547,59 +523,7 @@
         });
     }
 
-    // --- الحفظ والمتجر ---
-    function saveProgress() {
-        updateUI();
-        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
-        if (usersDB[currentUser.name]) {
-            usersDB[currentUser.name].xp = currentUser.xp;
-            usersDB[currentUser.name].level = currentUser.level;
-            usersDB[currentUser.name].inventory = currentUser.inventory;
-            usersDB[currentUser.name].isLegend = currentUser.isLegend;
-            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-        }
-    }
-
-    function renderStore() {
-        const items = [
-            { id: 1, name: "مضاعف XP", price: 1000, icon: "⚡" },
-            { id: 2, name: "درع الحماية", price: 2500, icon: "🛡️" },
-            { id: 3, name: "تاج الملك", price: 5000, icon: "👑" }
-        ];
-        const owned = currentUser.inventory || [];
-        
-        document.getElementById('store-container').innerHTML = items.map(item => {
-            const isOwned = owned.includes(item.id);
-            return `
-            <div class="store-item" style="${isOwned ? 'opacity:0.6; border-color:var(--gold)' : ''}">
-                <div style="font-size:2.5rem">${item.icon}</div>
-                <h3>${item.name}</h3>
-                <p style="color:var(--primary)">${item.price} XP</p>
-                <button class="cyber-btn ${isOwned ? '' : 'btn-main'}" onclick="buy(${item.id}, ${item.price})" ${isOwned ? 'disabled' : ''}>
-                    ${isOwned ? 'تم الامتلاك' : 'شراء'}
-                </button>
-            </div>`;
-        }).join('');
-    }
-
-    function buy(id, price) {
-        if(currentUser.name === 'timassa') {
-            currentUser.inventory.push(id);
-            notify("تمت الإضافة للمتجر بنجاح للأدمن!", "gold");
-            return;
-        }
-        if(currentUser.xp >= price) {
-            currentUser.xp -= price;
-            if(!currentUser.inventory) currentUser.inventory = [];
-            currentUser.inventory.push(id);
-            notify("تم الشراء بنجاح!", "gold");
-            saveProgress();
-        } else {
-            notify("رصيدك غير كافٍ!", "error");
-        }
-    }
-
-    // --- لوحة الأدمن ---
+    // --- لوحة الأدمن المطورة (إضافة، إنقاص، وطرد من الجلسة) ---
     function renderAdminPanel() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         const tbody = document.getElementById('admin-users-list');
@@ -612,26 +536,32 @@
                 <td>${username} ${user.isLegend ? '⭐' : ''}</td>
                 <td>${user.xp > 999999 ? '∞' : user.xp} XP</td>
                 <td>
-                    <button class="cyber-btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem; width: auto;" onclick="adminGiveXP('${username}')">+ نقاط</button>
-                    <button class="cyber-btn btn-main" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin-right: 5px;" onclick="adminToggleLegend('${username}')">⭐ ختم</button>
-                    ${username !== 'timassa' ? `<button class="cyber-btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin-right: 5px;" onclick="adminDeleteUser('${username}')">حذف</button>` : ''}
+                    <button class="cyber-btn btn-gold" style="padding: 5px 10px; font-size: 0.75rem; width: auto;" onclick="adminModifyXP('${username}', true)">+ نقطة</button>
+                    <button class="cyber-btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem; width: auto; margin-right: 4px;" onclick="adminModifyXP('${username}', false)">- نقطة</button>
+                    <button class="cyber-btn btn-main" style="padding: 5px 10px; font-size: 0.75rem; width: auto; margin-right: 4px;" onclick="adminToggleLegend('${username}')">⭐ ختم</button>
+                    ${username !== 'timassa' ? `<button class="cyber-btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem; width: auto; margin-right: 4px; background: #555;" onclick="adminKickUser('${username}')">طرد</button>` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
         }
     }
 
-    function adminGiveXP(targetName) {
-        let amountStr = prompt(`أدخل عدد النقاط (XP) للسحب لـ ${targetName}:`, "999999");
+    function adminModifyXP(targetName, isAdd) {
+        let actionWord = isAdd ? "إضافة" : "خصم وإنقاص";
+        let amountStr = prompt(`أدخل عدد النقاط المراد ${actionWord} لـ ${targetName}:`, "500");
         if(!amountStr) return;
         let amount = parseInt(amountStr);
         if(isNaN(amount)) return notify("الرجاء إدخال رقم صحيح", "error");
 
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         if(usersDB[targetName]) {
-            usersDB[targetName].xp += amount;
+            if(isAdd) {
+                usersDB[targetName].xp += amount;
+            } else {
+                usersDB[targetName].xp = Math.max(0, usersDB[targetName].xp - amount);
+            }
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-            notify(`تمت إضافة النقاط لـ ${targetName}`, "gold");
+            notify(`تم ${actionWord} النقاط بنجاح لـ ${targetName}`, "gold");
             
             if(targetName === currentUser.name && targetName !== 'timassa') {
                 currentUser.xp = usersDB[targetName].xp;
@@ -650,23 +580,22 @@
                 usersDB[targetName].level = 99;
             }
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-            notify(`تم تحديث حالة الختم والنجمة لـ ${targetName}`, "gold");
+            notify(`تم تحديث شارة الختم لـ ${targetName}`, "gold");
             if(targetName === currentUser.name) {
                 currentUser = usersDB[targetName];
-                currentUser.name = targetName;
                 updateUI();
             }
             renderAdminPanel();
         }
     }
 
-    function adminDeleteUser(targetName) {
-        if(targetName === 'timassa') return notify("لا يمكنك حذف حساب الأدمن الرئيسي!", "error");
-        if(confirm(`هل أنت متأكد من حذف المستخدم ${targetName} نهائياً؟`)) {
+    function adminKickUser(targetName) {
+        if(targetName === 'timassa') return notify("لا يمكنك طرد حساب الأدمن الرئيسي!", "error");
+        if(confirm(`هل أنت متأكد من طرد المستخدم ${targetName} وإخراجه من الجلسة؟`)) {
             let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
             delete usersDB[targetName];
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-            notify(`تم حذف المستخدم ${targetName}`, "error");
+            notify(`تم طرد المستخدم ${targetName} من الجلسة بنجاح`, "error");
             renderAdminPanel();
         }
     }
