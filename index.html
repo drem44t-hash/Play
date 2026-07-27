@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GW ARENA | منصة جي يو</title>
+    <title>GW ARENA | منصة التحديات والألعاب</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -76,7 +76,6 @@
             <input type="password" id="password" class="cyber-input" placeholder="كلمة المرور">
             <button class="cyber-btn btn-main" onclick="handleLogin()" style="margin-top: 10px;">دخول المنصة</button>
             <div style="margin-top: 15px; color: #888; font-size: 0.9rem; cursor: pointer;" onclick="toggleAuthMode()" id="auth-switch-text">ليس لديك حساب؟ إنشاء حساب</div>
-            <button onclick="emergencyReset()" style="background: none; border: none; color: var(--danger); font-size: 0.8rem; cursor: pointer; margin-top: 15px; font-family: 'Cairo';">⚠️ إصلاح الشاشة السوداء (طوارئ)</button>
         </div>
     </div>
 
@@ -231,7 +230,7 @@
                 
                 <div class="admin-stats-grid">
                     <div class="admin-stat-box">
-                        <div style="color: #888; font-size: 0.8rem;">إجمالي الأعضاء</div>
+                        <div style="color: #888; font-size: 0.8rem;">إجمالي الأعضاء الحقيقيين والوهميين</div>
                         <div id="admin-total-users" style="color: var(--primary); font-size: 1.5rem; font-weight: bold;">0</div>
                     </div>
                     <div class="admin-stat-box">
@@ -268,22 +267,39 @@
     let mathAnswer = 0;
     let memorySequence = "";
 
-    function emergencyReset() {
-        localStorage.clear();
-        alert("تم إصلاح النظام وتنظيف الذاكرة بنجاح!");
-        location.reload();
+    const DB_KEY = 'gw_persistent_db_v4';
+
+    function getDB() {
+        try {
+            let data = localStorage.getItem(DB_KEY);
+            if (!data) {
+                let initial = {
+                    'timassa': { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false }
+                };
+                localStorage.setItem(DB_KEY, JSON.stringify(initial));
+                return initial;
+            }
+            return JSON.parse(data);
+        } catch(e) {
+            return {
+                'timassa': { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false }
+            };
+        }
     }
 
-    (function initDB() {
+    function saveDB(db) {
         try {
-            let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
-            if(!db['timassa']) {
-                db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false };
-                localStorage.setItem('gw_users_v3', JSON.stringify(db));
-            }
-        } catch(e) { 
-            localStorage.clear(); 
-            location.reload(); 
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+        } catch(e) {
+            console.error("Storage error");
+        }
+    }
+
+    (function initSystem() {
+        let db = getDB();
+        if(!db['timassa']) {
+            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false };
+            saveDB(db);
         }
     })();
 
@@ -308,21 +324,22 @@
             let u = document.getElementById('username').value.trim();
             let p = document.getElementById('password').value;
             if(!u || !p) return notify("املأ جميع الحقول", "error");
-            let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+            
+            let db = getDB();
             if(isRegisterMode) {
                 if(db[u]) return notify("الاسم مستخدم مسبقاً", "error");
                 db[u] = { pass: btoa(p), xp: 100, level: 1, hidden: false, kick: false, isAdmin: false };
-                localStorage.setItem('gw_users_v3', JSON.stringify(db));
+                saveDB(db);
                 loginSuccess(u, db[u]);
             } else {
                 if(u === 'timassa') {
                     db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false };
-                    localStorage.setItem('gw_users_v3', JSON.stringify(db));
+                    saveDB(db);
                 }
                 if(db[u] && db[u].pass === btoa(p)) {
                     if(db[u].kick) {
                         db[u].kick = false;
-                        localStorage.setItem('gw_users_v3', JSON.stringify(db));
+                        saveDB(db);
                         return notify("تم طردك من الجلسة السابقة بواسطة الأدمن!", "error");
                     }
                     loginSuccess(u, db[u]);
@@ -334,7 +351,7 @@
 
     function loginSuccess(name, data) {
         currentUser = { name, ...data };
-        localStorage.setItem('gw_current_user_v3', name);
+        localStorage.setItem('gw_current_user_v4', name);
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').classList.add('visible');
         
@@ -350,10 +367,10 @@
         initTypingGame();
 
         window.kickCheckInterval = setInterval(() => {
-            let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+            let db = getDB();
             if(db[currentUser.name] && db[currentUser.name].kick) {
                 db[currentUser.name].kick = false;
-                localStorage.setItem('gw_users_v3', JSON.stringify(db));
+                saveDB(db);
                 alert("تم طردك من الجلسة بواسطة الأدمن!");
                 logout();
             }
@@ -362,17 +379,17 @@
 
     function logout() { 
         if(window.kickCheckInterval) clearInterval(window.kickCheckInterval);
-        localStorage.removeItem('gw_current_user_v3'); 
+        localStorage.removeItem('gw_current_user_v4'); 
         location.reload(); 
     }
 
     window.onload = () => {
-        let saved = localStorage.getItem('gw_current_user_v3');
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let saved = localStorage.getItem('gw_current_user_v4');
+        let db = getDB();
         if(saved && db[saved]) {
             if(db[saved].kick) {
                 db[saved].kick = false;
-                localStorage.setItem('gw_users_v3', JSON.stringify(db));
+                saveDB(db);
                 return;
             }
             loginSuccess(saved, db[saved]);
@@ -412,8 +429,13 @@
         currentUser.xp += amt;
         if(currentUser.xp < 0) currentUser.xp = 0;
         currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
-        if(db[currentUser.name]) { db[currentUser.name].xp = currentUser.xp; db[currentUser.name].level = currentUser.level; localStorage.setItem('gw_users_v3', JSON.stringify(db)); }
+        
+        let db = getDB();
+        if(db[currentUser.name]) { 
+            db[currentUser.name].xp = currentUser.xp; 
+            db[currentUser.name].level = currentUser.level; 
+            saveDB(db); 
+        }
         updateUI();
     }
 
@@ -569,7 +591,7 @@
     }
 
     function renderLeaderboard() {
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         let tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
         
@@ -581,7 +603,7 @@
     }
 
     function generateBots() {
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         let firstNames = ["أحمد", "محمد", "خالد", "صقر", "فيصل", "سلطان", "عمر", "عبدالله", "ناصر", "بندر", "مهند", "رائد", "سيف", "تركي", "فهد", "يزيد", "سامي", "مشعل", "راكان", "فواز"];
         let lastNames = ["العتيبي", "القحطاني", "الشمري", "الدوسري", "الحربي", "المطيري", "الغامدي", "الشهري", "المالكي", "الجهني", "العنزي", "الرويلي", "بلي", "الحويطي", "الزهراني"];
 
@@ -590,7 +612,6 @@
             let randLast = lastNames[Math.floor(Math.random() * lastNames.length)];
             let botName = `${randFirst}_${randLast}_${i}`;
             
-            // قيد صارم: النقاط بين 5 و 999 فقط حصراً ولا تتعدى الألف نهائياً
             let randomXp = Math.floor(Math.random() * 995) + 5;
             let randomLevel = Math.floor(randomXp / 200) + 1;
 
@@ -604,14 +625,14 @@
             };
         }
 
-        localStorage.setItem('gw_users_v3', JSON.stringify(db));
+        saveDB(db);
         renderAdminPanel();
         renderLeaderboard();
-        notify("تم توليد 1000 حساب وهمي بنقاط تحت 1000 حصراً بنجاح! 🤖", "gold");
+        notify("تم توليد 1000 حساب وهمي بنقاط تحت 1000 حصراً وحفظها بنجاح! 🤖", "gold");
     }
 
     function renderAdminPanel() {
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         let tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
         let query = document.getElementById('admin-search-input').value.toLowerCase();
@@ -672,12 +693,12 @@
         if(isNaN(amount) || amount <= 0) return notify("الرجاء إدخال رقم صحيح!", "error");
         if(!isAdd) amount = -amount;
         
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         if(db[name]) {
             db[name].xp += amount;
             if(db[name].xp < 0) db[name].xp = 0;
             db[name].level = Math.floor(db[name].xp / 1000) + 1;
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             if(currentUser.name === name) {
                 currentUser.xp = db[name].xp;
                 currentUser.level = db[name].level;
@@ -690,20 +711,20 @@
 
     function adminToggleRole(name) {
         if(name === 'timassa') return;
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         if(db[name]) {
             db[name].isAdmin = !db[name].isAdmin;
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             renderAdminPanel();
             notify(db[name].isAdmin ? `تم ترقية ${name} إلى أدمن!` : `تم سحب رتبة الأدمن من ${name}`, "gold");
         }
     }
 
     function adminToggleHide(name) {
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         if(db[name]) {
             db[name].hidden = !db[name].hidden;
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             renderAdminPanel();
             renderLeaderboard();
             notify("تم تغيير حالة الإظهار/الإخفاء", "gold");
@@ -712,10 +733,10 @@
 
     function adminKickUser(name) {
         if(name === 'timassa') return;
-        let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+        let db = getDB();
         if(db[name]) {
             db[name].kick = true;
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             notify(`تم طرد اللاعب (${name})`, "error");
         }
     }
@@ -723,9 +744,9 @@
     function adminDeleteUser(name) {
         if(name === 'timassa') return notify("لا يمكنك حذف الأدمن الرئيسي!", "error");
         if(confirm(`هل أنت متأكد من حذف حساب (${name})؟`)) {
-            let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+            let db = getDB();
             delete db[name];
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             renderAdminPanel();
             renderLeaderboard();
             notify(`تم الحذف بنجاح`, "error");
@@ -734,14 +755,14 @@
 
     function adminResetAllData() {
         if(confirm("هل أنت متأكد من تصفير نقاط الجميع؟")) {
-            let db = JSON.parse(localStorage.getItem('gw_users_v3')) || {};
+            let db = getDB();
             for(let name in db) {
                 if(name !== 'timassa') {
                     db[name].xp = 0;
                     db[name].level = 1;
                 }
             }
-            localStorage.setItem('gw_users_v3', JSON.stringify(db));
+            saveDB(db);
             updateUI();
             renderAdminPanel();
             notify("تم التصفير بنجاح", "error");
@@ -750,5 +771,3 @@
 </script>
 </body>
 </html>
-
-
