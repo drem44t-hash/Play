@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER ARENA | المنصة السيبرانية المطورة</title>
+    <title>GW ARENA | منصة  جي يو</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -66,11 +66,11 @@
 
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
-            <h1 style="color: var(--primary); font-size: 2rem;">CYBER ARENA</h1>
-            <p style="color: #aaa; margin-bottom: 20px;">المنصة السيبرانية المطورة</p>
+            <h1 style="color: var(--primary); font-size: 2rem;">GW ARENA</h1>
+            <p style="color: #aaa; margin-bottom: 20px;">منصة الألعاب الترفيهية والتحديات</p>
             <input type="text" id="username" class="cyber-input" placeholder="اسم المستخدم">
             <input type="password" id="password" class="cyber-input" placeholder="كلمة المرور">
-            <button class="cyber-btn btn-main" onclick="handleLogin()" style="margin-top: 10px;">دخول الجلسة</button>
+            <button class="cyber-btn btn-main" onclick="handleLogin()" style="margin-top: 10px;">دخول المنصة</button>
             <div style="margin-top: 15px; color: #888; font-size: 0.9rem; cursor: pointer;" onclick="toggleAuthMode()" id="auth-switch-text">ليس لديك حساب؟ إنشاء حساب</div>
             <button onclick="emergencyReset()" style="background: none; border: none; color: var(--danger); font-size: 0.8rem; cursor: pointer; margin-top: 15px; font-family: 'Cairo';">⚠️ إصلاح الشاشة السوداء (طوارئ)</button>
         </div>
@@ -92,33 +92,33 @@
         <div class="nav-dock">
             <button class="dock-btn active" onclick="switchTab('hub', this)">🎮 الألعاب الترفيهية</button>
             <button class="dock-btn" onclick="switchTab('leaderboard', this)">🏆 المتصدرين واللاعبين</button>
-            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ الأدمن</button>
+            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ الإدارة</button>
         </div>
 
         <div id="tab-hub" class="tab-content active">
             <div class="games-hub" id="main-games-hub">
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🧩</div>
-                    <h3 style="color: var(--secondary)">فك التشفير</h3>
-                    <p style="color: #888; font-size: 0.8rem;">رتب الكلمات المبعثرة.</p>
+                    <h3 style="color: var(--secondary)">ترتيب الكلمات</h3>
+                    <p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game1')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">⚡</div>
-                    <h3 style="color: var(--danger)">سرعة الهاكر</h3>
-                    <p style="color: #888; font-size: 0.8rem;">اختبر سرعة نقراتك.</p>
+                    <h3 style="color: var(--danger)">سرعة النقرات</h3>
+                    <p style="color: #888; font-size: 0.8rem;">اختبر سرعة ردة فعل.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game2')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🧮</div>
-                    <h3 style="color: var(--success)">العبث الرياضي</h3>
+                    <h3 style="color: var(--success)">التحدي الرياضي</h3>
                     <p style="color: #888; font-size: 0.8rem;">حل المعادلات بأسرع وقت.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game3')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🎯</div>
-                    <h3 style="color: var(--gold)">تخمين الأكواد</h3>
-                    <p style="color: #888; font-size: 0.8rem;">اعثر على الكود السري.</p>
+                    <h3 style="color: var(--gold)">تخمين الأرقام</h3>
+                    <p style="color: #888; font-size: 0.8rem;">اعثر على الرقم الصحيح.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game4')">العب</button>
                 </div>
             </div>
@@ -126,9 +126,9 @@
             <div id="arena-game-container" class="active-game-box hidden" style="margin-top: 20px;">
                 <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 5px 15px; margin-bottom: 15px; background: #222; color: #aaa; font-size: 0.8rem;">← العودة</button>
                 
-                <!-- لعبة 1: فك التشفير -->
+                <!-- لعبة 1: ترتيب الكلمات -->
                 <div id="subgame-1" class="subgame hidden">
-                    <h2 style="color: var(--secondary)">فك التشفير السيبراني</h2>
+                    <h2 style="color: var(--secondary)">تحدي ترتيب الكلمات</h2>
                     <div class="difficulty-selector">
                         <button class="diff-btn active" onclick="setDifficulty('very_easy', 1)">سهل جداً</button>
                         <button class="diff-btn" onclick="setDifficulty('easy', 1)">سهل</button>
@@ -143,9 +143,9 @@
                     </div>
                 </div>
 
-                <!-- لعبة 2: سرعة الهاكر -->
+                <!-- لعبة 2: سرعة النقرات -->
                 <div id="subgame-2" class="subgame hidden">
-                    <h2 style="color: var(--danger)">تحدي سرعة الهاكر</h2>
+                    <h2 style="color: var(--danger)">تحدي سرعة النقرات</h2>
                     <div style="font-size: 3rem; color: var(--gold); margin: 10px 0;" id="clicker-score">0</div>
                     <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;" id="clicker-timer">الوقت: 10 ثوانٍ</div>
                     <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 220px;" disabled>اضغط بأقصى سرعة!</button>
@@ -153,18 +153,18 @@
                     <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 180px;" id="clicker-start-btn">ابدأ التحدي</button>
                 </div>
 
-                <!-- لعبة 3: العبث الرياضي (لعبة جديدة) -->
+                <!-- لعبة 3: التحدي الرياضي -->
                 <div id="subgame-3" class="subgame hidden">
-                    <h2 style="color: var(--success)">العبث الرياضي السريع</h2>
+                    <h2 style="color: var(--success)">التحدي الرياضي السريع</h2>
                     <div class="word-display" id="math-question">5 + 3 = ?</div>
                     <div class="math-grid" id="math-options" style="margin: 0 auto; max-width: 350px;"></div>
                     <br>
                     <button class="cyber-btn btn-danger" onclick="skipGame(3)" style="max-width: 150px; margin: 0 auto;">تخطي ⏭</button>
                 </div>
 
-                <!-- لعبة 4: تخمين الأكواد -->
+                <!-- لعبة 4: تخمين الأرقام -->
                 <div id="subgame-4" class="subgame hidden">
-                    <h2 style="color: var(--gold)">تخمين الكود السري</h2>
+                    <h2 style="color: var(--gold)">تخمين الرقم الصحيح</h2>
                     <p style="color: #aaa;" id="guess-range-text">اختر رقماً بين 1 و 10</p>
                     <div class="difficulty-selector">
                         <button class="diff-btn active" onclick="setGuessDiff(10)">سهل (1-10)</button>
@@ -182,8 +182,8 @@
 
         <div id="tab-leaderboard" class="tab-content">
             <div class="active-game-box">
-                <h2 style="color: var(--gold)">🏆 المتصدرين وتفاعل اللاعبين</h2>
-                <p style="color: #888; font-size: 0.85rem;">تابع ترتيبك ومستوى زملائك في الجلسة</p>
+                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين واللاعبين</h2>
+                <p style="color: #888; font-size: 0.85rem;">تابع ترتيبك ومستوى زملائك في المنصة</p>
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
@@ -197,7 +197,7 @@
 
         <div id="tab-admin" class="tab-content">
             <div class="active-game-box" style="text-align: right;">
-                <h2 style="color: var(--gold)">⚡ لوحة تحكم الأدمن (timassa)</h2>
+                <h2 style="color: var(--gold)">⚡ لوحة التحكم الإدارية (timassa)</h2>
                 <input type="text" id="admin-search-input" class="cyber-input" placeholder="ابحث عن لاعب..." oninput="renderAdminPanel()" style="margin-bottom: 15px;">
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
@@ -228,9 +228,9 @@
 
     (function initDB() {
         try {
-            let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
+            let db = JSON.parse(localStorage.getItem('gw_users')) || {};
             db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, isLegend: true };
-            localStorage.setItem('cyber_users', JSON.stringify(db));
+            localStorage.setItem('gw_users', JSON.stringify(db));
         } catch(e) { localStorage.clear(); location.reload(); }
     })();
 
@@ -246,7 +246,7 @@
 
     function toggleAuthMode() {
         isRegisterMode = !isRegisterMode;
-        document.querySelector('.auth-screen .cyber-btn').innerText = isRegisterMode ? "إنشاء حساب" : "دخول الجلسة";
+        document.querySelector('.auth-screen .cyber-btn').innerText = isRegisterMode ? "إنشاء حساب" : "دخول المنصة";
         document.getElementById('auth-switch-text').innerText = isRegisterMode ? "لديك حساب؟ سجل دخول" : "ليس لديك حساب؟ إنشاء حساب";
     }
 
@@ -255,11 +255,11 @@
             let u = document.getElementById('username').value.trim();
             let p = document.getElementById('password').value;
             if(!u || !p) return notify("املأ جميع الحقول", "error");
-            let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
+            let db = JSON.parse(localStorage.getItem('gw_users')) || {};
             if(isRegisterMode) {
                 if(db[u]) return notify("الاسم مستخدم مسبقاً", "error");
                 db[u] = { pass: btoa(p), xp: 100, level: 1 };
-                localStorage.setItem('cyber_users', JSON.stringify(db));
+                localStorage.setItem('gw_users', JSON.stringify(db));
                 loginSuccess(u, db[u]);
             } else {
                 if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, isLegend: true };
@@ -271,7 +271,7 @@
 
     function loginSuccess(name, data) {
         currentUser = { name, ...data };
-        localStorage.setItem('cyber_current_user', name);
+        localStorage.setItem('gw_current_user', name);
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').classList.add('visible');
         if(currentUser.name === 'timassa' || currentUser.isAdmin) document.getElementById('admin-nav-btn').classList.remove('hidden');
@@ -280,11 +280,11 @@
         initMathGame();
     }
 
-    function logout() { localStorage.removeItem('cyber_current_user'); location.reload(); }
+    function logout() { localStorage.removeItem('gw_current_user'); location.reload(); }
 
     window.onload = () => {
-        let saved = localStorage.getItem('cyber_current_user');
-        let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        let saved = localStorage.getItem('gw_current_user');
+        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
         if(saved && db[saved]) loginSuccess(saved, db[saved]);
     };
 
@@ -320,8 +320,8 @@
         if(currentUser.name === 'timassa') return;
         currentUser.xp += amt;
         currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
-        let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
-        if(db[currentUser.name]) { db[currentUser.name].xp = currentUser.xp; db[currentUser.name].level = currentUser.level; localStorage.setItem('cyber_users', JSON.stringify(db)); }
+        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+        if(db[currentUser.name]) { db[currentUser.name].xp = currentUser.xp; db[currentUser.name].level = currentUser.level; localStorage.setItem('gw_users', JSON.stringify(db)); }
         updateUI();
     }
 
@@ -332,12 +332,11 @@
         if(gameNum === 4) { targetNumber = Math.floor(Math.random() * currentMaxGuess) + 1; }
     }
 
-    // لعبة فك التشفير بالمستويات
     const wordList = {
         very_easy: ["قطة", "باب", "قلم", "كرة"],
-        easy: ["حاسوب", "شبكة", "نظام", "برمجة"],
-        hard: ["خوارزمية", "سيرفرات", "تشفير بيانات", "سایبر امنیت"],
-        extreme: ["Q$z9#kL!mP", "XyZ-9988-Rt", "0x99AF-Cyber"]
+        easy: ["طاولة", "حاسوب", "منزل", "كتابة"],
+        hard: ["استراتيجية", "استكشاف", "مغامرات", "تكنولوجيا"],
+        extreme: ["Q$z9#kL!mP", "XyZ-9988-Rt", "0x99AF-Games"]
     };
 
     function setDifficulty(diff, gameNum) {
@@ -364,7 +363,6 @@
         } else { notify("خطأ، حاول مجدداً", "error"); }
     }
 
-    // لعبة سرعة الهاكر
     let clickerScore = 0, clickerTimer = 10, clickerInterval = null, isClickerActive = false;
     function startClickerGame() {
         if(isClickerActive) return;
@@ -387,7 +385,6 @@
     }
     function hitClicker() { if(isClickerActive) document.getElementById('clicker-score').innerText = ++clickerScore; }
 
-    // لعبة العبث الرياضي (الجديدة)
     function initMathGame() {
         let n1 = Math.floor(Math.random() * 20) + 1;
         let n2 = Math.floor(Math.random() * 20) + 1;
@@ -412,7 +409,6 @@
         });
     }
 
-    // تخمين الأكواد بالمستويات
     function setGuessDiff(max) {
         currentMaxGuess = max;
         targetNumber = Math.floor(Math.random() * max) + 1;
@@ -429,7 +425,7 @@
     }
 
     function renderLeaderboard() {
-        let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
         let tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
         Object.entries(db).sort((a,b)=>b[1].xp - a[1].xp).forEach(([name, user], idx) => {
@@ -438,7 +434,7 @@
     }
 
     function renderAdminPanel() {
-        let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
         let tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
         let query = document.getElementById('admin-search-input').value.toLowerCase();
@@ -448,8 +444,8 @@
         }
     }
     function adminAdd(name) {
-        let db = JSON.parse(localStorage.getItem('cyber_users')) || {};
-        if(db[name]) { db[name].xp += 500; localStorage.setItem('cyber_users', JSON.stringify(db)); updateUI(); renderAdminPanel(); }
+        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+        if(db[name]) { db[name].xp += 500; localStorage.setItem('gw_users', JSON.stringify(db)); updateUI(); renderAdminPanel(); }
     }
 </script>
 </body>
