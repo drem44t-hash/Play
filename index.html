@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER LEGENDS | منصة الألعاب المتكاملة</title>
+    <title>CYBER LEGENDS | مسابقات وتحديات لا نهائية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,10 +33,10 @@
         .auth-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
         
         .input-group { margin: 20px 0; position: relative; }
-        .cyber-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; font-size: 1rem; transition: 0.3s; text-align: center; }
+        .cyber-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; font-size: 1rem; transition: 0.3s; text-align: center; font-family: 'Cairo'; }
         .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
         
-        .cyber-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .cyber-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; font-family: 'Cairo'; }
         .btn-main { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: #000; }
         .btn-gold { background: linear-gradient(45deg, var(--gold), #ffae00); color: #000; }
         .btn-danger { background: linear-gradient(45deg, var(--danger), #ff8008); color: white; }
@@ -45,15 +45,19 @@
 
         .auth-switch { margin-top: 20px; color: #888; font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
 
-        /* --- 🎮 واجهة اللعب الرئيسية --- */
-        .app-container { max-width: 900px; margin: 0 auto; padding: 20px; display: none; opacity: 0; transition: 1s; }
+        /* --- 🎮 واجهة المنصة --- */
+        .app-container { max-width: 950px; margin: 0 auto; padding: 20px; display: none; opacity: 0; transition: 1s; }
         .app-container.visible { display: block; opacity: 1; }
 
-        .header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
+        .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; font-size: 1.2rem; }
 
-        /* شريط التنقل بين الألعاب والتبويبات */
+        .level-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 8px 15px; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; min-width: 180px; }
+        .progress-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--gold)); width: 0%; transition: 0.3s; }
+
+        /* شريط التنقل */
         .nav-dock { display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; flex-wrap: wrap; border: 1px solid var(--border); }
         .dock-btn { background: transparent; border: none; color: #888; padding: 8px 16px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; font-family: 'Cairo', sans-serif; font-size: 0.9rem; }
         .dock-btn.active { background: var(--glass); color: white; box-shadow: 0 0 15px rgba(255,255,255,0.05); border: 1px solid var(--border); }
@@ -63,23 +67,21 @@
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .game-box { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 30px 20px; text-align: center; position: relative; backdrop-filter: blur(10px); }
-        .word-display { font-size: 3rem; font-weight: 900; color: var(--gold); letter-spacing: 8px; margin: 20px 0; text-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        .word-display { font-size: 2.8rem; font-weight: 900; color: var(--gold); letter-spacing: 6px; margin: 20px 0; text-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
 
-        /* تصميم لعبة الذاكرة */
+        /* الذاكرة */
         .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; }
         .memory-card { background: rgba(0,242,254,0.1); border: 1px solid var(--border); height: 70px; border-radius: 12px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
-        .memory-card:hover { background: rgba(0,242,254,0.2); }
         .memory-card.flipped { background: var(--primary); color: #000; font-weight: bold; }
 
-        /* المتجر */
+        /* لوحة المتصدرين */
+        .leaderboard-table, .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
+        .leaderboard-table th, .leaderboard-table td, .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.95rem; }
+        .leaderboard-table th, .admin-table th { color: var(--primary); }
+
         .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .store-item { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border: 1px solid var(--border); transition: 0.3s; text-align: center; }
         .store-item:hover { border-color: var(--primary); transform: translateY(-5px); }
-
-        /* لوحة التحكم */
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
-        .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
-        .admin-table th { color: var(--primary); }
         
         .hidden { display: none !important; }
     </style>
@@ -90,8 +92,8 @@
 
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
-            <h1 style="background: -webkit-linear-gradient(var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin-bottom: 10px;">CYBER ARCADE</h1>
-            <p style="color: #aaa; margin-bottom: 30px;">منصة الألعاب السيبرانية</p>
+            <h1 style="background: -webkit-linear-gradient(var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin-bottom: 10px;">CYBER ARENA</h1>
+            <p style="color: #aaa; margin-bottom: 30px;">منصة المسابقات والسحوبات الكبرى</p>
             
             <input type="text" id="username" class="cyber-input" placeholder="اسم المستخدم" autocomplete="off">
             <div class="input-group">
@@ -109,17 +111,29 @@
                 <div class="avatar" id="avatar-char">?</div>
                 <div>
                     <div id="display-name" style="font-size: 0.9rem; color: #aaa;">Guest</div>
-                    <div id="display-xp" style="color: var(--primary); font-size: 1.2rem;">0 XP</div>
+                    <div id="display-xp" style="color: var(--primary); font-size: 1.1rem; font-weight: 900;">0 XP</div>
                 </div>
             </div>
+
+            <!-- معلومات المستوى وتخطي المستوى -->
+            <div class="level-box">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span id="display-level" style="color: var(--gold);">المستوى: 1</span>
+                    <span style="cursor: pointer; color: var(--primary); text-decoration: underline;" onclick="skipLevel()">⚡ تخطي (500 XP)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="level-progress"></div></div>
+            </div>
+
             <button onclick="logout()" style="background: none; border: 1px solid #333; color: var(--danger); padding: 5px 15px; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">خروج</button>
         </div>
 
         <!-- شريط الألعاب والخيارات -->
         <div class="nav-dock">
             <button class="dock-btn active" onclick="switchTab('game1', this)">🧩 فك التشفير</button>
-            <button class="dock-btn" onclick="switchTab('game2', this)">🧠 ذاكرة السيبر</button>
-            <button class="dock-btn" onclick="switchTab('game3', this)">⚡ سرعة الهاكر</button>
+            <button class="dock-btn" onclick="switchTab('game2', this)">🧠 الذاكرة</button>
+            <button class="dock-btn" onclick="switchTab('game3', this)">⚡ النقرات</button>
+            <button class="dock-btn" onclick="switchTab('game4', this)">🎯 تخمين الرقم</button>
+            <button class="dock-btn" onclick="switchTab('leaderboard', this)" style="color: var(--gold);">🏆 المتصدرين</button>
             <button class="dock-btn" onclick="switchTab('store', this)">🛒 المتجر</button>
             <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ لوحة الأدمن</button>
         </div>
@@ -131,7 +145,7 @@
                 <p style="color: #888; font-size: 0.9rem;">رتب حروف الكلمة المبعثرة لاكتشاف كلمة المرور</p>
                 <div class="word-display" id="solo-word">----</div>
                 <input type="text" id="solo-input" class="cyber-input" placeholder="أدخل الكلمة هنا..." style="max-width: 400px; margin-bottom: 20px;" onkeydown="if(event.key==='Enter') checkSolo()">
-                <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">تحقق (+100 XP)</button>
+                <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">تحقق (+150 XP)</button>
             </div>
         </div>
 
@@ -141,7 +155,7 @@
                 <h2 style="color: var(--primary)">ذاكرة السيبر (مطابقة الأكواد)</h2>
                 <p style="color: #888; font-size: 0.9rem;">ابحث عن الأكواد المتطابقة واكسب النقاط</p>
                 <div class="memory-grid" id="memory-grid"></div>
-                <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 200px; margin-top: 15px;">إعادة تشغيل اللعبة</button>
+                <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 200px; margin-top: 15px;">إعادة اللعبة</button>
             </div>
         </div>
 
@@ -152,9 +166,41 @@
                 <p style="color: #888; font-size: 0.9rem;">اضغط على الزر بأسرع ما يمكنك خلال 10 ثوانٍ!</p>
                 <div style="font-size: 3rem; color: var(--gold); margin: 15px 0;" id="clicker-score">0</div>
                 <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 20px;" id="clicker-timer">الوقت: 10 ثوانٍ</div>
-                <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 250px; font-size: 1.3rem;" disabled>اضغط هنا بسرعة!</button>
+                <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 250px; font-size: 1.3rem;" disabled>انقر بسرعة!</button>
                 <br>
                 <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 200px; margin-top: 15px;" id="clicker-start-btn">ابدأ التحدي</button>
+            </div>
+        </div>
+
+        <!-- اللعبة الرابعة: تخمين الرقم -->
+        <div id="tab-game4" class="tab-content">
+            <div class="game-box">
+                <h2 style="color: var(--gold)">تخمين الرقم السري</h2>
+                <p style="color: #888; font-size: 0.9rem;">خمن رقماً بين 1 و 10 واكسب نقاط مضاعفة!</p>
+                <div class="word-display" id="guess-hint">?</div>
+                <input type="number" id="guess-input" class="cyber-input" placeholder="اكتب رقماً من 1 إلى 10" style="max-width: 300px; margin-bottom: 20px;">
+                <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 200px;">تخمين (+300 XP)</button>
+            </div>
+        </div>
+
+        <!-- لوحة المتصدرين والمختمين -->
+        <div id="tab-leaderboard" class="tab-content">
+            <div class="game-box">
+                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين والمختمين</h2>
+                <p style="color: #888; font-size: 0.9rem;">اللاعبون الحاصلون على النجمة ورصيد لا نهائي للمسابقات</p>
+                <div style="overflow-x: auto;">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>الترتيب</th>
+                                <th>المستخدم</th>
+                                <th>المستوى</th>
+                                <th>النقاط (XP)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-list"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -167,12 +213,13 @@
         <div id="tab-admin" class="tab-content">
             <div class="game-box" style="text-align: right;">
                 <h2 style="color: var(--gold); margin-bottom: 20px;">⚡ لوحة تحكم الأدمن (timassa)</h2>
+                <p style="color: #888; font-size: 0.9rem; margin-bottom: 15px;">من هنا يمكنك إعطاء نقاط السحب لأي لاعب أو منحه شارة الختم والنقاط النهائية</p>
                 <div style="overflow-x: auto;">
                     <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>المستخدم</th>
-                                <th>النقاط (XP)</th>
+                                <th>النقاط</th>
                                 <th>الإجراءات</th>
                             </tr>
                         </thead>
@@ -187,14 +234,19 @@
     let currentUser = null;
     let isRegisterMode = false;
     let soloTarget = "";
+    let targetNumber = Math.floor(Math.random() * 10) + 1;
 
-    // تهيئة حساب الأدمن الافتراضي
-    (function initAdmin() {
+    // تهيئة حساب الأدمن الافتراضي وحسابات مختمة جاهزة للمسابقات
+    (function initDatabase() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         if (!usersDB['timassa']) {
-            usersDB['timassa'] = { pass: btoa('123456'), xp: 99999, inventory: [1,2,3], isAdmin: true };
-            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 99, inventory: [1,2,3], isAdmin: true, isLegend: true };
         }
+        // حساب مختم جاهز للسحب والمسابقات
+        if (!usersDB['legend_pro']) {
+            usersDB['legend_pro'] = { pass: btoa('123456'), xp: 999999999999, level: 99, inventory: [1,2,3], isAdmin: false, isLegend: true };
+        }
+        localStorage.setItem('cyber_users', JSON.stringify(usersDB));
     })();
 
     function notify(msg, type = 'normal') {
@@ -231,7 +283,7 @@
             if(u.toLowerCase() === 'timassa') return notify("هذا الاسم مخصص للإدارة!", "error");
             if(usersDB[u]) return notify("اسم المستخدم محجوز!", "error");
             
-            usersDB[u] = { pass: btoa(p), xp: 50, inventory: [], isAdmin: false };
+            usersDB[u] = { pass: btoa(p), xp: 100, level: 1, inventory: [], isAdmin: false, isLegend: false };
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
             notify("تم إنشاء الحساب بنجاح!", "gold");
             loginSuccess(u, usersDB[u]);
@@ -263,6 +315,7 @@
         updateUI();
         initSoloGame();
         initMemoryGame();
+        renderLeaderboard();
     }
 
     function logout() {
@@ -279,10 +332,20 @@
     }
 
     function updateUI() {
-        document.getElementById('display-name').innerText = currentUser.name;
-        document.getElementById('display-xp').innerText = `${currentUser.xp} XP`;
+        document.getElementById('display-name').innerText = currentUser.name + (currentUser.isLegend ? " ⭐" : "");
+        
+        // عرض النقاط بشكل لا نهائي إذا تجاوزت الحد أو كانت للمختمين
+        let xpDisplay = currentUser.xp > 999999 ? "∞ (999,999+ XP)" : `${currentUser.xp.toLocaleString()} XP`;
+        document.getElementById('display-xp').innerText = xpDisplay;
+        
         document.getElementById('avatar-char').innerText = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('display-level').innerText = `المستوى: ${currentUser.level}`;
+        
+        let progressPercent = (currentUser.level * 10) % 100;
+        document.getElementById('level-progress').style.width = `${progressPercent}%`;
+
         renderStore();
+        renderLeaderboard();
         if(currentUser.name === 'timassa' || currentUser.isAdmin) {
             renderAdminPanel();
         }
@@ -293,9 +356,29 @@
         document.getElementById(`tab-${tab}`).classList.add('active');
         document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if(tab === 'leaderboard') renderLeaderboard();
     }
 
-    // --- 1. لعبة فك التشفير ---
+    // --- نظام المستويات والتخطي ---
+    function addXP(amount) {
+        currentUser.xp += amount;
+        // نظام حساب المستوى التلقائي
+        currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
+        saveProgress();
+    }
+
+    function skipLevel() {
+        if(currentUser.xp >= 500) {
+            currentUser.xp -= 500;
+            currentUser.level += 1;
+            notify(`تم تخطي المستوى بنجاح وأصبح مستواك: ${currentUser.level}!`, "gold");
+            saveProgress();
+        } else {
+            notify("رصيدك لا يكفي لتخطي المستوى (تحتاج 500 XP)", "error");
+        }
+    }
+
+    // --- 1. فك التشفير ---
     function initSoloGame() {
         const words = ["حاسوب", "ذكاء", "شبكة", "نظام", "كود", "بيانات", "تشفير", "سيرفر", "خوارزمية", "برمجة"];
         soloTarget = words[Math.floor(Math.random() * words.length)];
@@ -305,19 +388,17 @@
     function checkSolo() {
         const val = document.getElementById('solo-input').value.trim();
         if(val === soloTarget) {
-            currentUser.xp += 100;
-            notify("إجابة صحيحة! +100 XP", "gold");
+            addXP(150);
+            notify("إجابة صحيحة! +150 XP", "gold");
             document.getElementById('solo-input').value = "";
             initSoloGame();
-            saveProgress();
         } else {
             notify("إجابة خاطئة!", "error");
         }
     }
 
-    // --- 2. لعبة ذاكرة السيبر ---
+    // --- 2. ذاكرة السيبر ---
     let memoryIcons = ["💻", "🛡️", "⚡", "👑", "🔥", "💎"];
-    let memoryCards = [];
     let flippedCards = [];
     let matchedPairs = 0;
 
@@ -328,7 +409,6 @@
         matchedPairs = 0;
         
         let deck = [...memoryIcons, ...memoryIcons].sort(() => Math.random() - 0.5);
-        memoryCards = deck;
 
         deck.forEach((icon, index) => {
             const card = document.createElement('div');
@@ -353,9 +433,8 @@
                 matchedPairs++;
                 flippedCards = [];
                 if (matchedPairs === memoryIcons.length) {
-                    currentUser.xp += 250;
-                    notify("أتممت لعبة الذاكرة بنجاح! +250 XP", "gold");
-                    saveProgress();
+                    addXP(300);
+                    notify("أتممت لعبة الذاكرة بنجاح! +300 XP", "gold");
                 }
             } else {
                 setTimeout(() => {
@@ -369,7 +448,7 @@
         }
     }
 
-    // --- 3. لعبة سرعة الهاكر ---
+    // --- 3. سرعة الهاكر ---
     let clickerScore = 0;
     let clickerTimer = 10;
     let clickerInterval = null;
@@ -394,10 +473,9 @@
                 document.getElementById('clicker-btn').setAttribute('disabled', 'true');
                 document.getElementById('clicker-start-btn').removeAttribute('disabled');
                 
-                let earnedXP = clickerScore * 10;
-                currentUser.xp += earnedXP;
+                let earnedXP = clickerScore * 15;
+                addXP(earnedXP);
                 notify(`انتهى الوقت! حصدت ${clickerScore} نقرة (+${earnedXP} XP)`, "gold");
-                saveProgress();
             }
         }, 1000);
     }
@@ -408,13 +486,53 @@
         document.getElementById('clicker-score').innerText = clickerScore;
     }
 
-    // --- المتجر والحفظ ---
+    // --- 4. تخمين الرقم السري ---
+    function checkGuess() {
+        let val = parseInt(document.getElementById('guess-input').value);
+        if(isNaN(val)) return notify("الرجاء إدخال رقم صحيح", "error");
+
+        if(val === targetNumber) {
+            addXP(500);
+            notify("مبروك! لقد خمنت الرقم الصحيح +500 XP", "gold");
+            targetNumber = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('guess-input').value = "";
+        } else {
+            notify("تخمين خاطئ، حاول مجدداً!", "error");
+        }
+    }
+
+    // --- لوحة المتصدرين ---
+    function renderLeaderboard() {
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        const tbody = document.getElementById('leaderboard-list');
+        tbody.innerHTML = '';
+
+        // ترتيب المستخدمين حسب النقاط تنازلياً
+        let sortedUsers = Object.entries(usersDB).sort((a, b) => b[1].xp - a[1].xp);
+
+        sortedUsers.forEach(([username, user], index) => {
+            const tr = document.createElement('tr');
+            let starBadge = user.isLegend ? " ⭐" : "";
+            let xpFormatted = user.xp > 999999 ? "∞ (999,999+)" : user.xp.toLocaleString();
+            tr.innerHTML = `
+                <td>#${index + 1}</td>
+                <td>${username}${starBadge}</td>
+                <td>المستوى ${user.level || 1}</td>
+                <td style="color: var(--gold); font-weight: bold;">${xpFormatted} XP</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- الحفظ والمتجر ---
     function saveProgress() {
         updateUI();
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         if (usersDB[currentUser.name]) {
             usersDB[currentUser.name].xp = currentUser.xp;
+            usersDB[currentUser.name].level = currentUser.level;
             usersDB[currentUser.name].inventory = currentUser.inventory;
+            usersDB[currentUser.name].isLegend = currentUser.isLegend;
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
         }
     }
@@ -453,7 +571,7 @@
         }
     }
 
-    // --- لوحة التحكم (الإدمن) ---
+    // --- لوحة الأدمن ---
     function renderAdminPanel() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         const tbody = document.getElementById('admin-users-list');
@@ -463,10 +581,11 @@
             const user = usersDB[username];
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${username} ${username === 'timassa' ? '👑' : ''}</td>
-                <td>${user.xp} XP</td>
+                <td>${username} ${user.isLegend ? '⭐' : ''}</td>
+                <td>${user.xp > 999999 ? '∞' : user.xp} XP</td>
                 <td>
                     <button class="cyber-btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem; width: auto;" onclick="adminGiveXP('${username}')">+ نقاط</button>
+                    <button class="cyber-btn btn-main" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin-right: 5px;" onclick="adminToggleLegend('${username}')">⭐ ختم</button>
                     ${username !== 'timassa' ? `<button class="cyber-btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin-right: 5px;" onclick="adminDeleteUser('${username}')">حذف</button>` : ''}
                 </td>
             `;
@@ -475,7 +594,7 @@
     }
 
     function adminGiveXP(targetName) {
-        let amountStr = prompt(`أدخل عدد النقاط (XP) التي تريد إضافتها لـ ${targetName}:`, "500");
+        let amountStr = prompt(`أدخل عدد النقاط (XP) للسحب لـ ${targetName}:`, "999999");
         if(!amountStr) return;
         let amount = parseInt(amountStr);
         if(isNaN(amount)) return notify("الرجاء إدخال رقم صحيح", "error");
@@ -484,10 +603,29 @@
         if(usersDB[targetName]) {
             usersDB[targetName].xp += amount;
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
-            notify(`تمت إضافة ${amount} XP لـ ${targetName}`, "gold");
+            notify(`تمت إضافة النقاط لـ ${targetName}`, "gold");
             
             if(targetName === currentUser.name) {
                 currentUser.xp = usersDB[targetName].xp;
+                updateUI();
+            }
+            renderAdminPanel();
+        }
+    }
+
+    function adminToggleLegend(targetName) {
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        if(usersDB[targetName]) {
+            usersDB[targetName].isLegend = !usersDB[targetName].isLegend;
+            if(usersDB[targetName].isLegend) {
+                usersDB[targetName].xp = 999999999999; // نقاط نهائية ولا نهائية للسحب
+                usersDB[targetName].level = 99;
+            }
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            notify(`تم تحديث حالة الختم والنجمة لـ ${targetName}`, "gold");
+            if(targetName === currentUser.name) {
+                currentUser = usersDB[targetName];
+                currentUser.name = targetName;
                 updateUI();
             }
             renderAdminPanel();
