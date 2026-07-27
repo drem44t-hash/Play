@@ -77,7 +77,7 @@
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
             <h1 style="background: -webkit-linear-gradient(var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; margin-bottom: 10px;">CYBER LOGIN</h1>
-            <p style="color: #aaa; margin-bottom: 30px;">بوابتك نحو التحدي</p>
+            <p style="color: #aaa; margin-bottom: 30px;">بوابتك نحو التحدي (محلي)</p>
             
             <input type="text" id="username" class="cyber-input" placeholder="اسم المستخدم" autocomplete="off">
             <div class="input-group">
@@ -103,7 +103,7 @@
 
         <div class="nav-dock">
             <button class="dock-btn active" onclick="switchTab('solo', this)">👤 فردي</button>
-            <button class="dock-btn" onclick="switchTab('multi', this)">⚔️ أونلاين</button>
+            <button class="dock-btn" onclick="switchTab('multi', this)">⚔️ ساحة التحدي</button>
             <button class="dock-btn" onclick="switchTab('store', this)">🛒 المتجر</button>
         </div>
 
@@ -118,10 +118,10 @@
 
         <div id="tab-multi" class="tab-content">
             <div class="game-box">
-                <h2 style="color: var(--primary)">الساحة العالمية</h2>
+                <h2 style="color: var(--primary)">الساحة المشتركة (Local)</h2>
                 
                 <div id="room-login">
-                    <p style="color:#888">أدخل كود الروم للعب مع صديقك</p>
+                    <p style="color:#888">أدخل كود الروم للعب (افتح نافذة أخرى للمتصفح لتجربتها)</p>
                     <input type="text" id="room-code" class="cyber-input" placeholder="رقم الغرفة (مثلاً 5050)" style="max-width: 300px; margin-bottom: 20px;">
                     <button class="cyber-btn btn-main" onclick="joinRoom()" style="max-width: 200px;">اتصال</button>
                 </div>
@@ -148,19 +148,15 @@
     </div>
 
 <script>
-    // ============================================
-    // ⚙️ الإعدادات (ضع رابطك هنا ليعمل كل شيء)
-    // ============================================
-    const DB_URL = "https://your-firebase-id.firebaseio.com/cyber_v4"; 
-
     // حالة التطبيق
     let currentUser = null;
     let isRegisterMode = false;
     let soloTarget = "";
     let multiTarget = "";
     let currentRoomCode = "";
+    let syncInterval;
 
-    // 1. إدارة الإشعارات (بديلة الـ alert)
+    // 1. إدارة الإشعارات
     function notify(msg, type = 'normal') {
         const box = document.getElementById('toast-box');
         const toast = document.createElement('div');
@@ -170,7 +166,7 @@
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3000);
     }
 
-    // 2. إدارة الدخول (Auth)
+    // 2. إدارة الدخول باستخدام LocalStorage
     function toggleAuthMode() {
         isRegisterMode = !isRegisterMode;
         const btn = document.querySelector('.auth-switch');
@@ -185,37 +181,33 @@
         }
     }
 
-    async function handleLogin() {
+    function handleLogin() {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value;
         if(!u || !p) return notify("الرجاء تعبئة جميع الحقول", "error");
 
-        notify("جاري الاتصال بالسيرفر...", "normal");
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
 
-        try {
-            const res = await fetch(`${DB_URL}/users/${u}.json`);
-            const data = await res.json();
-
-            if (isRegisterMode) {
-                if(data) return notify("اسم المستخدم محجوز!", "error");
-                const newUser = { pass: btoa(p), xp: 50, inventory: [] };
-                await fetch(`${DB_URL}/users/${u}.json`, { method: 'PUT', body: JSON.stringify(newUser) });
-                notify("تم إنشاء الحساب! جاري الدخول...", "gold");
-                loginSuccess(u, newUser);
+        if (isRegisterMode) {
+            if(usersDB[u]) return notify("اسم المستخدم محجوز!", "error");
+            
+            usersDB[u] = { pass: btoa(p), xp: 50, inventory: [] };
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            notify("تم إنشاء الحساب! جاري الدخول...", "gold");
+            loginSuccess(u, usersDB[u]);
+        } else {
+            if(usersDB[u] && usersDB[u].pass === btoa(p)) {
+                notify("تم تسجيل الدخول بنجاح", "gold");
+                loginSuccess(u, usersDB[u]);
             } else {
-                if(data && data.pass === btoa(p)) {
-                    notify("تم تسجيل الدخول بنجاح", "gold");
-                    loginSuccess(u, data);
-                } else {
-                    notify("اسم المستخدم أو كلمة المرور خطأ", "error");
-                }
+                notify("اسم المستخدم أو كلمة المرور خطأ", "error");
             }
-        } catch(e) { notify("خطأ في الاتصال! تأكد من الرابط", "error"); }
+        }
     }
 
     function loginSuccess(name, data) {
         currentUser = { name: name, ...data };
-        localStorage.setItem('cyber_user', name); // حفظ الجلسة
+        localStorage.setItem('cyber_current_user', name); 
         
         document.getElementById('auth-screen').style.opacity = '0';
         setTimeout(() => document.getElementById('auth-screen').style.display = 'none', 500);
@@ -226,17 +218,16 @@
     }
 
     function logout() {
-        localStorage.removeItem('cyber_user');
+        localStorage.removeItem('cyber_current_user');
         location.reload();
     }
 
-    // التحقق من الجلسة المحفوظة عند الفتح
-    window.onload = async () => {
-        const saved = localStorage.getItem('cyber_user');
-        if(saved) {
-            const res = await fetch(`${DB_URL}/users/${saved}.json`);
-            const data = await res.json();
-            if(data) loginSuccess(saved, data);
+    window.onload = () => {
+        const savedName = localStorage.getItem('cyber_current_user');
+        const usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        
+        if(savedName && usersDB[savedName]) {
+            loginSuccess(savedName, usersDB[savedName]);
         }
     }
 
@@ -257,26 +248,26 @@
 
     // 4. اللعب الفردي
     function initGame() {
-        const words = ["حاسوب", "ذكاء", "شبكة", "نظام", "كود", "بيانات"];
+        const words = ["حاسوب", "ذكاء", "شبكة", "نظام", "كود", "بيانات", "تشفير", "سيرفر"];
         soloTarget = words[Math.floor(Math.random() * words.length)];
         document.getElementById('solo-word').innerText = soloTarget.split('').sort(()=>Math.random()-0.5).join('');
     }
 
-    async function checkSolo() {
+    function checkSolo() {
         const val = document.getElementById('solo-input').value.trim();
         if(val === soloTarget) {
             currentUser.xp += 100;
             notify("إجابة صحيحة! +100 XP", "gold");
             document.getElementById('solo-input').value = "";
             initGame();
-            await saveProgress();
+            saveProgress();
         } else {
             notify("إجابة خاطئة!", "error");
         }
     }
 
-    // 5. اللعب الجماعي (روم)
-    async function joinRoom() {
+    // 5. اللعب الجماعي المحاكى (Local Rooms)
+    function joinRoom() {
         const code = document.getElementById('room-code').value.trim();
         if(!code) return notify("أدخل كود الغرفة", "error");
         
@@ -285,54 +276,71 @@
         document.getElementById('room-arena').classList.remove('hidden');
         document.getElementById('current-room-id').innerText = code;
         
-        // تسجيل الدخول للروم
-        await fetch(`${DB_URL}/rooms/${code}/players/${currentUser.name}.json`, { method: 'PUT', body: JSON.stringify({ xp: currentUser.xp }) });
+        let roomsDB = JSON.parse(localStorage.getItem('cyber_rooms')) || {};
+        if (!roomsDB[code]) roomsDB[code] = { players: {}, word: null, scrambled: null, winner: null };
+        roomsDB[code].players[currentUser.name] = { xp: currentUser.xp };
+        localStorage.setItem('cyber_rooms', JSON.stringify(roomsDB));
         
         notify("تم الاتصال بالغرفة", "gold");
-        setInterval(syncRoom, 1500);
+        syncInterval = setInterval(syncRoom, 1000);
     }
 
-    async function syncRoom() {
-        const res = await fetch(`${DB_URL}/rooms/${currentRoomCode}.json`);
-        const data = await res.json();
-        if(!data) return;
+    function syncRoom() {
+        let roomsDB = JSON.parse(localStorage.getItem('cyber_rooms')) || {};
+        const roomData = roomsDB[currentRoomCode];
+        if(!roomData) return;
 
-        // اللاعبين
+        // تحديث اللاعبين
         const playersDiv = document.getElementById('players-list');
-        playersDiv.innerHTML = Object.keys(data.players || {}).map(p => 
+        playersDiv.innerHTML = Object.keys(roomData.players || {}).map(p => 
             `<span style="background:#333; padding:5px 10px; border-radius:5px; font-size:0.8rem; border:1px solid #555">${p}</span>`
         ).join('');
 
-        // الكلمة
-        if(data.word && data.word !== multiTarget) {
-            multiTarget = data.word;
-            document.getElementById('multi-word').innerText = data.scrambled;
-            document.getElementById('game-status').innerText = data.winner ? `👑 الفائز بالجولة: ${data.winner}` : "جولة جديدة!";
-        } else if(!data.word) {
-            // أنا المسؤول عن إنشاء كلمة جديدة إذا كانت فارغة
-            const w = ["سيرفر", "تطبيق", "منصة", "حماية"];
+        // تحديث الكلمة
+        if(roomData.word && roomData.word !== multiTarget) {
+            multiTarget = roomData.word;
+            document.getElementById('multi-word').innerText = roomData.scrambled;
+            document.getElementById('game-status').innerText = roomData.winner ? `👑 الفائز بالجولة السابقة: ${roomData.winner}` : "جولة جديدة!";
+        } else if(!roomData.word) {
+            // توليد كلمة جديدة للغرفة
+            const w = ["خوارزمية", "تطبيق", "برمجة", "حماية", "اختراق", "تطوير"];
             const real = w[Math.floor(Math.random()*w.length)];
             const scram = real.split('').sort(()=>Math.random()-0.5).join('');
-            await fetch(`${DB_URL}/rooms/${currentRoomCode}.json`, { method: 'PATCH', body: JSON.stringify({ word: real, scrambled: scram, winner: null }) });
+            
+            roomData.word = real;
+            roomData.scrambled = scram;
+            roomData.winner = roomData.winner || null; 
+            localStorage.setItem('cyber_rooms', JSON.stringify(roomsDB));
         }
     }
 
-    async function checkMulti() {
+    function checkMulti() {
         if(document.getElementById('multi-input').value.trim() === multiTarget) {
             currentUser.xp += 200;
             notify("أنت الأسرع! +200 XP", "gold");
             document.getElementById('multi-input').value = "";
             
-            // مسح الكلمة لإعلام الجميع بالفوز
-            await fetch(`${DB_URL}/rooms/${currentRoomCode}.json`, { method: 'PATCH', body: JSON.stringify({ word: null, winner: currentUser.name }) });
-            await saveProgress();
+            let roomsDB = JSON.parse(localStorage.getItem('cyber_rooms')) || {};
+            if(roomsDB[currentRoomCode]) {
+                roomsDB[currentRoomCode].word = null;
+                roomsDB[currentRoomCode].winner = currentUser.name;
+                localStorage.setItem('cyber_rooms', JSON.stringify(roomsDB));
+            }
+            saveProgress();
+        } else {
+            notify("إجابة خاطئة!", "error");
         }
     }
 
     // 6. المتجر والحفظ
-    async function saveProgress() {
+    function saveProgress() {
         updateUI();
-        await fetch(`${DB_URL}/users/${currentUser.name}.json`, { method: 'PATCH', body: JSON.stringify({ xp: currentUser.xp, inventory: currentUser.inventory }) });
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        if (usersDB[currentUser.name]) {
+            usersDB[currentUser.name].xp = currentUser.xp;
+            usersDB[currentUser.name].inventory = currentUser.inventory;
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+        }
     }
 
     function renderStore() {
@@ -357,13 +365,13 @@
         }).join('');
     }
 
-    async function buy(id, price) {
+    function buy(id, price) {
         if(currentUser.xp >= price) {
             currentUser.xp -= price;
             if(!currentUser.inventory) currentUser.inventory = [];
             currentUser.inventory.push(id);
             notify("تم الشراء بنجاح!", "gold");
-            await saveProgress();
+            saveProgress();
         } else {
             notify("رصيدك غير كافٍ!", "error");
         }
