@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GW ARENA | منصة جي يو</title>
+    <title>GW ARENA | منصة جي يو </title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -227,7 +227,7 @@
         <div id="tab-admin" class="tab-content">
             <div class="admin-panel-card">
                 <h2 style="color: var(--gold); margin-top:0;">⚡ لوحة الإدارة المتطورة (timassa)</h2>
-                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة (إخفاء من المتصدرين، حذف الحسابات، أو تعديل النقاط)</p>
+                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة (إضافة نقاط مخصصة، إخفاء من المتصدرين، أو الحذف)</p>
                 
                 <div class="admin-stats-grid">
                     <div class="admin-stat-box">
@@ -248,7 +248,7 @@
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
-                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>الإجراءات (إدارة / إخفاء / حذف)</th></tr>
+                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>تحكم مخصص بالنقاط</th><th>الإجراءات</th></tr>
                         </thead>
                         <tbody id="admin-users-list"></tbody>
                     </table>
@@ -276,7 +276,7 @@
     (function initDB() {
         try {
             let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
-            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: false };
+            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true };
             localStorage.setItem('gw_users_v2', JSON.stringify(db));
         } catch(e) { localStorage.clear(); location.reload(); }
     })();
@@ -309,7 +309,7 @@
                 localStorage.setItem('gw_users_v2', JSON.stringify(db));
                 loginSuccess(u, db[u]);
             } else {
-                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: false };
+                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true };
                 if(db[u] && db[u].pass === btoa(p)) loginSuccess(u, db[u]);
                 else notify("خطأ في البيانات المدخلة", "error");
             }
@@ -530,8 +530,8 @@
         let tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
         
-        // فلترة المستخدمين بحيث لا يتم عرض من تم إخفاؤهم
-        let filteredUsers = Object.entries(db).filter(([name, user]) => !user.hidden);
+        // استبعاد حساب timassa تماماً واللاعبين المخفيين من لوحة المتصدرين
+        let filteredUsers = Object.entries(db).filter(([name, user]) => name !== 'timassa' && !user.hidden);
 
         filteredUsers.sort((a,b)=>b[1].xp - a[1].xp).forEach(([name, user], idx) => {
             tbody.innerHTML += `<tr><td>#${idx+1}</td><td>${name}</td><td>مستوى ${user.level || 1}</td><td style="color:var(--gold);">${user.xp} XP</td></tr>`;
@@ -556,7 +556,7 @@
             let hideBtnText = isHidden ? "إظهار بالمتصدرين 👁️" : "إخفاء من المتصدرين 🚫";
             let hideBtnClass = isHidden ? "btn-success" : "btn-gold";
             
-            let hideBtn = name === 'timassa' ? '' : `<button class="cyber-btn ${hideBtnClass}" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminToggleHide('${name}')">${hideBtnText}</button>`;
+            let hideBtn = name === 'timassa' ? '<span style="color:var(--gold); font-size:0.75rem;">(محمي بالكامل)</span>' : `<button class="cyber-btn ${hideBtnClass}" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminToggleHide('${name}')">${hideBtnText}</button>`;
             let deleteBtn = name === 'timassa' ? '' : `<button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminDeleteUser('${name}')">حذف ❌</button>`;
             
             tbody.innerHTML += `
@@ -565,8 +565,13 @@
                     <td style="color:var(--gold);">${db[name].xp} XP</td>
                     <td>مستوى ${db[name].level || 1}</td>
                     <td>
-                        <button class="cyber-btn btn-gold" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', 500)">+500</button>
-                        <button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', -500)">-500</button>
+                        <div style="display: flex; gap: 5px; align-items: center; max-width: 220px;">
+                            <input type="number" id="custom-xp-${name}" class="cyber-input" placeholder="الرقم" style="margin:0; padding:5px; font-size:0.8rem;">
+                            <button class="cyber-btn btn-gold" style="padding:5px 10px; font-size:0.75rem; width:auto;" onclick="adminAddCustomXP('${name}', true)">+</button>
+                            <button class="cyber-btn btn-danger" style="padding:5px 10px; font-size:0.75rem; width:auto;" onclick="adminAddCustomXP('${name}', false)">-</button>
+                        </div>
+                    </td>
+                    <td>
                         ${hideBtn}
                         ${deleteBtn}
                     </td>
@@ -574,7 +579,12 @@
         }
     }
 
-    function adminAddXP(name, amount) {
+    function adminAddCustomXP(name, isAdd) {
+        let inputVal = document.getElementById(`custom-xp-${name}`).value;
+        let amount = parseInt(inputVal);
+        if(isNaN(amount) || amount <= 0) return notify("الرجاء إدخال رقم صحيح للباس!", "error");
+        if(!isAdd) amount = -amount;
+        
         let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
         if(db[name]) {
             db[name].xp += amount;
@@ -587,7 +597,7 @@
                 updateUI();
             }
             renderAdminPanel();
-            notify(`تم تعديل رصيد ${name} بنجاح`, "gold");
+            notify(`تم تعديل رصيد ${name} بمقدار ${amount} XP`, "gold");
         }
     }
 
