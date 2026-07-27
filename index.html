@@ -39,6 +39,7 @@
         .cyber-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
         .btn-main { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: #000; }
         .btn-gold { background: linear-gradient(45deg, var(--gold), #ffae00); color: #000; }
+        .btn-danger { background: linear-gradient(45deg, var(--danger), #ff8008); color: white; }
         .cyber-btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
         .cyber-btn:active { transform: scale(0.98); }
 
@@ -52,7 +53,7 @@
         .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; }
         .avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
 
-        .nav-dock { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; }
+        .nav-dock { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; flex-wrap: wrap; }
         .dock-btn { background: transparent; border: none; color: #666; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 12px; transition: 0.3s; }
         .dock-btn.active { background: var(--glass); color: white; box-shadow: 0 0 15px rgba(255,255,255,0.05); }
 
@@ -66,6 +67,11 @@
         .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .store-item { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border: 1px solid var(--border); transition: 0.3s; text-align: center; }
         .store-item:hover { border-color: var(--primary); transform: translateY(-5px); }
+
+        /* لوحة التحكم */
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
+        .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .admin-table th { color: var(--primary); }
         
         .hidden { display: none !important; }
     </style>
@@ -105,6 +111,7 @@
             <button class="dock-btn active" onclick="switchTab('solo', this)">👤 فردي</button>
             <button class="dock-btn" onclick="switchTab('multi', this)">⚔️ ساحة التحدي</button>
             <button class="dock-btn" onclick="switchTab('store', this)">🛒 المتجر</button>
+            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ لوحة الإدارة</button>
         </div>
 
         <div id="tab-solo" class="tab-content active">
@@ -142,8 +149,28 @@
         </div>
 
         <div id="tab-store" class="tab-content">
-            <div class="store-grid" id="store-container">
+            <div class="store-grid" id="store-container"></div>
+        </div>
+
+        <!-- لوحة التحكم للإدمن -->
+        <div id="tab-admin" class="tab-content">
+            <div class="game-box" style="text-align: right;">
+                <h2 style="color: var(--gold); margin-bottom: 20px;">⚡ لوحة تحكم الأدمن (timassa)</h2>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>المستخدم</th>
+                                <th>النقاط (XP)</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-list">
+                            <!-- سيتم تعبئتها ديناميكياً -->
+                        </tbody>
+                    </table>
                 </div>
+            </div>
         </div>
     </div>
 
@@ -155,6 +182,15 @@
     let multiTarget = "";
     let currentRoomCode = "";
     let syncInterval;
+
+    // تهيئة حساب الأدمن الافتراضي عند أول تشغيل
+    (function initAdmin() {
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        if (!usersDB['timassa']) {
+            usersDB['timassa'] = { pass: btoa('123456'), xp: 99999, inventory: [1,2,3], isAdmin: true };
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+        }
+    })();
 
     // 1. إدارة الإشعارات
     function notify(msg, type = 'normal') {
@@ -189,9 +225,10 @@
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
 
         if (isRegisterMode) {
+            if(u === 'timassa') return notify("هذا الاسم مخصص للإدارة!", "error");
             if(usersDB[u]) return notify("اسم المستخدم محجوز!", "error");
             
-            usersDB[u] = { pass: btoa(p), xp: 50, inventory: [] };
+            usersDB[u] = { pass: btoa(p), xp: 50, inventory: [], isAdmin: false };
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
             notify("تم إنشاء الحساب! جاري الدخول...", "gold");
             loginSuccess(u, usersDB[u]);
@@ -213,6 +250,14 @@
         setTimeout(() => document.getElementById('auth-screen').style.display = 'none', 500);
         
         document.getElementById('app').classList.add('visible');
+        
+        // إظهار زر الإدارة إذا كان المستخدم هو timassa أو لديه صلاحية الإدارة
+        if(currentUser.name === 'timassa' || currentUser.isAdmin) {
+            document.getElementById('admin-nav-btn').classList.remove('hidden');
+        } else {
+            document.getElementById('admin-nav-btn').classList.add('hidden');
+        }
+
         updateUI();
         initGame();
     }
@@ -237,6 +282,9 @@
         document.getElementById('display-xp').innerText = `${currentUser.xp} XP`;
         document.getElementById('avatar-char').innerText = currentUser.name.charAt(0).toUpperCase();
         renderStore();
+        if(currentUser.name === 'timassa' || currentUser.isAdmin) {
+            renderAdminPanel();
+        }
     }
 
     function switchTab(tab, btn) {
@@ -266,7 +314,7 @@
         }
     }
 
-    // 5. اللعب الجماعي المحاكى (Local Rooms)
+    // 5. اللعب الجماعي (Local Rooms)
     function joinRoom() {
         const code = document.getElementById('room-code').value.trim();
         if(!code) return notify("أدخل كود الغرفة", "error");
@@ -290,19 +338,16 @@
         const roomData = roomsDB[currentRoomCode];
         if(!roomData) return;
 
-        // تحديث اللاعبين
         const playersDiv = document.getElementById('players-list');
         playersDiv.innerHTML = Object.keys(roomData.players || {}).map(p => 
             `<span style="background:#333; padding:5px 10px; border-radius:5px; font-size:0.8rem; border:1px solid #555">${p}</span>`
         ).join('');
 
-        // تحديث الكلمة
         if(roomData.word && roomData.word !== multiTarget) {
             multiTarget = roomData.word;
             document.getElementById('multi-word').innerText = roomData.scrambled;
             document.getElementById('game-status').innerText = roomData.winner ? `👑 الفائز بالجولة السابقة: ${roomData.winner}` : "جولة جديدة!";
         } else if(!roomData.word) {
-            // توليد كلمة جديدة للغرفة
             const w = ["خوارزمية", "تطبيق", "برمجة", "حماية", "اختراق", "تطوير"];
             const real = w[Math.floor(Math.random()*w.length)];
             const scram = real.split('').sort(()=>Math.random()-0.5).join('');
@@ -332,7 +377,59 @@
         }
     }
 
-    // 6. المتجر والحفظ
+    // 6. أوامر لوحة التحكم (الإدمن)
+    function renderAdminPanel() {
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        const tbody = document.getElementById('admin-users-list');
+        tbody.innerHTML = '';
+
+        for (let username in usersDB) {
+            const user = usersDB[username];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${username} ${username === 'timassa' ? '👑' : ''}</td>
+                <td>${user.xp} XP</td>
+                <td>
+                    <button class="cyber-btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem; width: auto;" onclick="adminGiveXP('${username}')">+ نقاط</button>
+                    ${username !== 'timassa' ? `<button class="cyber-btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin-right: 5px;" onclick="adminDeleteUser('${username}')">حذف</button>` : ''}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    function adminGiveXP(targetName) {
+        let amountStr = prompt(`أدخل عدد النقاط (XP) التي تريد إضافتها لـ ${targetName}:`, "500");
+        if(!amountStr) return;
+        let amount = parseInt(amountStr);
+        if(isNaN(amount)) return notify("الرجاء إدخال رقم صحيح", "error");
+
+        let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+        if(usersDB[targetName]) {
+            usersDB[targetName].xp += amount;
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            notify(`تمت إضافة ${amount} XP لـ ${targetName}`, "gold");
+            
+            if(targetName === currentUser.name) {
+                currentUser.xp = usersDB[targetName].xp;
+                updateUI();
+            }
+            renderAdminPanel();
+        }
+    }
+
+    function adminDeleteUser(targetName) {
+        if(targetName === 'timassa') return notify("لا يمكنك حذف حساب الأدمن الرئيسي!", "error");
+        if(confirm(`هل أنت متأكد من حذف المستخدم ${targetName} نهائياً؟`)) {
+            let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
+            delete usersDB[targetName];
+            localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            notify(`تم حذف المستخدم ${targetName}`, "error");
+            renderAdminPanel();
+        }
+    }
+
+    // 7. المتجر والحفظ
     function saveProgress() {
         updateUI();
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
