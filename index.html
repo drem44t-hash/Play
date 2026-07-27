@@ -60,7 +60,6 @@
         .chat-msg.bot { border-right: 3px solid var(--primary); align-self: flex-start; }
         .chat-msg.me { border-left: 3px solid var(--gold); align-self: flex-end; background: rgba(255,215,0,0.1); }
         .chat-name { font-size: 0.8rem; color: #888; margin-bottom: 5px; font-weight: bold; }
-        .chat-mention { color: var(--gold); font-weight: bold; background: rgba(255,215,0,0.1); padding: 2px 6px; border-radius: 5px; }
         .chat-input-area { display: flex; gap: 10px; padding: 15px; background: rgba(0,0,0,0.5); border-top: 1px solid var(--border); }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -73,6 +72,7 @@
 
         .hidden { display: none !important; }
         .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 400px; margin: 20px auto; }
+        .game-hud { display: flex; justify-content: space-around; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -115,9 +115,9 @@
         <!-- قسم الألعاب -->
         <div id="tab-hub" class="tab-content active">
             <div class="games-hub" id="main-games-hub">
-                <div class="game-card" onclick="openGame('game1')"><div style="font-size: 2.5rem;">🧩</div><h3 style="color: var(--secondary)">ترتيب الكلمات</h3><p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة.</p></div>
+                <div class="game-card" onclick="openGame('game1')"><div style="font-size: 2.5rem;">🧩</div><h3 style="color: var(--secondary)">ترتيب الكلمات</h3><p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة (مستويات ووقت).</p></div>
                 <div class="game-card" onclick="openGame('game2')"><div style="font-size: 2.5rem;">⚡</div><h3 style="color: var(--danger)">سرعة النقرات</h3><p style="color: #888; font-size: 0.8rem;">كم نقرة في 10 ثوانٍ؟</p></div>
-                <div class="game-card" onclick="openGame('game3')"><div style="font-size: 2.5rem;">🧮</div><h3 style="color: var(--success)">تحدي الرياضيات</h3><p style="color: #888; font-size: 0.8rem;">حل المعادلات السريعة.</p></div>
+                <div class="game-card" onclick="openGame('game3')"><div style="font-size: 2.5rem;">🧮</div><h3 style="color: var(--success)">تحدي الرياضيات</h3><p style="color: #888; font-size: 0.8rem;">حل المعادلات مع وقت ومستويات.</p></div>
                 <div class="game-card" onclick="openGame('game4')"><div style="font-size: 2.5rem;">🎯</div><h3 style="color: var(--gold)">الرقم المخفي</h3><p style="color: #888; font-size: 0.8rem;">خمن الرقم الصحيح.</p></div>
                 <div class="game-card" onclick="openGame('game5')"><div style="font-size: 2.5rem;">🧠</div><h3 style="color: var(--primary)">الذاكرة الفولاذية</h3><p style="color: #888; font-size: 0.8rem;">احفظ تسلسل الأرقام.</p></div>
                 <div class="game-card" onclick="openGame('game6')"><div style="font-size: 2.5rem;">⌨️</div><h3 style="color: var(--secondary)">سباق الكيبورد</h3><p style="color: #888; font-size: 0.8rem;">اكتب الكلمة بأسرع وقت.</p></div>
@@ -131,9 +131,31 @@
             <div id="arena-game-container" class="active-game-box hidden">
                 <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 8px 20px; margin-bottom: 20px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #fff;">← رجوع للقائمة</button>
                 
-                <div id="subgame-1" class="subgame hidden"><h2 style="color: var(--secondary)">🧩 تحدي ترتيب الكلمات</h2><div class="word-display" id="solo-word">----</div><input type="text" id="solo-input" class="cyber-input" placeholder="الكلمة الصحيحة..." style="max-width: 300px; margin: 0 auto 15px auto;"><button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">إرسال الجواب</button></div>
+                <!-- لعبة 1: ترتيب الكلمات (بمستويات ووقت) -->
+                <div id="subgame-1" class="subgame hidden">
+                    <h2 style="color: var(--secondary)">🧩 تحدي ترتيب الكلمات</h2>
+                    <div class="game-hud">
+                        <div>المستوى: <span id="s1-level" style="color:var(--gold)">1</span> / 5</div>
+                        <div>الوقت المتبقي: <span id="s1-timer" style="color:var(--danger)">15</span>ث</div>
+                    </div>
+                    <div class="word-display" id="solo-word">----</div>
+                    <input type="text" id="solo-input" class="cyber-input" placeholder="الكلمة الصحيحة..." style="max-width: 300px; margin: 0 auto 15px auto;" onkeydown="if(event.key==='Enter') checkSolo()">
+                    <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">إرسال الجواب</button>
+                </div>
+
                 <div id="subgame-2" class="subgame hidden"><h2 style="color: var(--danger)">⚡ سرعة النقرات</h2><div style="font-size: 4rem; color: var(--gold); margin: 10px 0;" id="clicker-score">0</div><div style="font-size: 1.2rem; color: var(--primary); margin-bottom: 15px;" id="clicker-timer">الوقت: 10</div><button class="cyber-btn btn-danger" id="clicker-btn" onclick="hitClicker()" style="max-width: 250px; padding: 20px; font-size: 1.5rem;" disabled>اضغط!</button><br><br><button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 200px;" id="clicker-start-btn">بدأ التحدي</button></div>
-                <div id="subgame-3" class="subgame hidden"><h2 style="color: var(--success)">🧮 التحدي الرياضي</h2><div class="word-display" id="math-question">? = ?</div><div class="options-grid" id="math-options"></div></div>
+                
+                <!-- لعبة 3: التحدي الرياضي (بمستويات ووقت) -->
+                <div id="subgame-3" class="subgame hidden">
+                    <h2 style="color: var(--success)">🧮 التحدي الرياضي</h2>
+                    <div class="game-hud">
+                        <div>المستوى: <span id="s3-level" style="color:var(--gold)">1</span> / 5</div>
+                        <div>الوقت المتبقي: <span id="s3-timer" style="color:var(--danger)">10</span>ث</div>
+                    </div>
+                    <div class="word-display" id="math-question">? = ?</div>
+                    <div class="options-grid" id="math-options"></div>
+                </div>
+
                 <div id="subgame-4" class="subgame hidden"><h2 style="color: var(--gold)">🎯 تخمين الرقم المخفي (1-50)</h2><input type="number" id="guess-input" class="cyber-input" placeholder="اكتب رقم..." style="max-width: 250px; margin: 20px auto;"><button class="cyber-btn btn-main" onclick="checkGuess()" style="max-width: 200px;">تخمين</button></div>
                 <div id="subgame-5" class="subgame hidden"><h2 style="color: var(--primary)">🧠 الذاكرة الفولاذية</h2><div class="word-display" id="memory-display">12345</div><input type="text" id="memory-input" class="cyber-input hidden" placeholder="اكتب الرقم..." style="max-width: 250px; margin: 15px auto;"><button class="cyber-btn btn-purple" id="memory-start-btn" onclick="startMemoryGame()" style="max-width: 200px;">إظهار الرقم</button><button class="cyber-btn btn-success hidden" id="memory-check-btn" onclick="checkMemory()" style="max-width: 200px;">تحقق</button></div>
                 <div id="subgame-6" class="subgame hidden"><h2 style="color: var(--secondary)">⌨️ سباق الكيبورد</h2><div class="word-display" id="typing-target">برمجة</div><input type="text" id="typing-input" class="cyber-input" placeholder="ابدأ الكتابة..." style="max-width: 300px; margin: 0 auto 15px auto;" oninput="checkTypingRace()"></div>
@@ -228,7 +250,6 @@
         if(!u || !p) return notify("املأ الحقول يا غالي", "error");
         let db = getDB();
         
-        // التحقق إذا كان اللاعب مطرود (وهمياً)
         if(sessionStorage.getItem(`kicked_${u}`)) {
             return notify("🚫 تم طرد هذا الحساب من الجلسة الحالية من قبل الإدارة!", "error");
         }
@@ -292,24 +313,163 @@
         btn.classList.add('active');
     }
 
-    /* ================= الألعاب ================= */
-    function openGame(id) { document.getElementById('main-games-hub').classList.add('hidden'); document.getElementById('arena-game-container').classList.remove('hidden'); document.querySelectorAll('.subgame').forEach(s => s.classList.add('hidden')); document.getElementById(`subgame-${id.replace('game','')}`).classList.remove('hidden'); initGameLogic(id); }
-    function closeGame() { document.getElementById('arena-game-container').classList.add('hidden'); document.getElementById('main-games-hub').classList.remove('hidden'); }
+    /* ================= الألعاب (مع نظام المستويات والوقت) ================= */
+    function openGame(id) { 
+        document.getElementById('main-games-hub').classList.add('hidden'); 
+        document.getElementById('arena-game-container').classList.remove('hidden'); 
+        document.querySelectorAll('.subgame').forEach(s => s.classList.add('hidden')); 
+        document.getElementById(`subgame-${id.replace('game','')}`).classList.remove('hidden'); 
+        initGameLogic(id); 
+    }
     
-    let tWord="", cScore=0, cTime=10, cInt, isClick=false, mAns=0, gNum=0, memSeq="", typeW="", rpsOpts=["حجرة","ورقة","مقص"], colMatch=true, emAns="", reactState=0, reactStart=0, reactTimeout;
+    function closeGame() { 
+        clearInterval(gameTimerInterval);
+        document.getElementById('arena-game-container').classList.add('hidden'); 
+        document.getElementById('main-games-hub').classList.remove('hidden'); 
+    }
+
+    let gameTimerInterval = null;
+
+    // المتغيرات الخاصة بلعبة 1 (ترتيب الكلمات)
+    let s1Level = 1, s1Time = 15, tWord = "";
+    const s1WordsList = [
+        ["تفاح", "شمس", "جوال"],
+        ["برمجة", "حاسوب", "تطوير"],
+        ["سيرفرات", "تحديات", "برمجيات"],
+        ["استراتيجية", "الجمهوريات", "التكنولوجيا"],
+        ["الخوارزميات", "الديجيتال", "الميكانيكية"]
+    ];
+
     function initGameLogic(id) {
-        if(id==='game1') { const ws=["تفاح","شمس","جوال"]; tWord=ws[Math.floor(Math.random()*ws.length)]; document.getElementById('solo-word').innerText = tWord.split('').sort(()=>Math.random()-0.5).join(''); document.getElementById('solo-input').value=''; }
-        if(id==='game3') { let n1=Math.floor(Math.random()*20), n2=Math.floor(Math.random()*20); mAns=n1+n2; document.getElementById('math-question').innerText=`${n1} + ${n2} = ?`; let o=[mAns, mAns+2, mAns-1, mAns+5].sort(()=>Math.random()-0.5); let b=""; o.forEach(x=>b+=`<button class="cyber-btn btn-success" onclick="checkMath(${x})">${x}</button>`); document.getElementById('math-options').innerHTML=b; }
+        clearInterval(gameTimerInterval);
+        if(id === 'game1') {
+            s1Level = 1;
+            loadS1Level();
+        }
+        if(id === 'game3') {
+            s3Level = 1;
+            loadS3Level();
+        }
+        if(id==='game2') { cScore=0; cTime=10; isClick=false; document.getElementById('clicker-score').innerText="0"; document.getElementById('clicker-timer').innerText="الوقت: 10"; document.getElementById('clicker-btn').disabled=true; document.getElementById('clicker-start-btn').classList.remove('hidden'); }
         if(id==='game4') { gNum=Math.floor(Math.random()*50)+1; document.getElementById('guess-input').value=''; }
         if(id==='game6') { const tw=["برمجة","تحدي","أرينا"]; typeW=tw[Math.floor(Math.random()*tw.length)]; document.getElementById('typing-target').innerText=typeW; document.getElementById('typing-input').value=''; }
         if(id==='game8') { const cols=[{n:"أحمر",c:"#ff4b2b"},{n:"أزرق",c:"#00f2fe"}]; let w=cols[Math.floor(Math.random()*cols.length)]; let c=cols[Math.floor(Math.random()*cols.length)]; colMatch=(w.n===c.n); let box=document.getElementById('color-word'); box.innerText=w.n; box.style.color=c.c; }
         if(id==='game9') { const ems=[{e:"🚗💨",a:"سيارة"},{e:"🍔🍟",a:"وجبة"}]; let r=ems[Math.floor(Math.random()*ems.length)]; emAns=r.a; document.getElementById('emoji-display').innerText=r.e; let opts=[r.a,"طيارة","تفاحة","بحر"].sort(()=>Math.random()-0.5); let b=""; opts.forEach(x=>b+=`<button class="cyber-btn btn-gold" onclick="checkEmoji('${x}')">${x}</button>`); document.getElementById('emoji-options').innerHTML=b; }
         if(id==='game10') { let box=document.getElementById('reaction-box'); box.style.background='var(--bg)'; box.innerText='اضغط ابدأ'; reactState=0; clearTimeout(reactTimeout); }
     }
-    function checkSolo() { if(document.getElementById('solo-input').value===tWord) { addXP(50); notify("+50 XP","gold"); initGameLogic('game1'); } else notify("خطأ","error"); }
-    function startClickerGame() { if(isClick) return; cScore=0; cTime=10; isClick=true; document.getElementById('clicker-btn').disabled=false; cInt=setInterval(()=>{ cTime--; document.getElementById('clicker-timer').innerText="الوقت: "+cTime; if(cTime<=0){ clearInterval(cInt); isClick=false; document.getElementById('clicker-btn').disabled=true; addXP(cScore*2); notify("ربحت "+cScore*2+" XP","gold"); } },1000); }
+
+    // دوال لعبة 1: ترتيب الكلمات (بمستويات ووقت)
+    function loadS1Level() {
+        clearInterval(gameTimerInterval);
+        document.getElementById('s1-level').innerText = s1Level;
+        s1Time = Math.max(5, 16 - (s1Level * 2)); // يقل الوقت مع كل مستوى
+        document.getElementById('s1-timer').innerText = s1Time;
+        
+        let pool = s1WordsList[s1Level - 1] || s1WordsList[s1WordsList.length - 1];
+        tWord = pool[Math.floor(Math.random() * pool.length)];
+        document.getElementById('solo-word').innerText = tWord.split('').sort(()=>Math.random()-0.5).join('');
+        document.getElementById('solo-input').value = '';
+
+        gameTimerInterval = setInterval(() => {
+            s1Time--;
+            document.getElementById('s1-timer').innerText = s1Time;
+            if(s1Time <= 0) {
+                clearInterval(gameTimerInterval);
+                notify("انتهى الوقت! خسرت المحاولة", "error");
+                closeGame();
+            }
+        }, 1000);
+    }
+
+    function checkSolo() {
+        if(document.getElementById('solo-input').value.trim() === tWord) {
+            clearInterval(gameTimerInterval);
+            addXP(s1Level * 30);
+            notify(`كفو! أنهيت المستوى ${s1Level} (+${s1Level * 30} XP)`, "gold");
+            s1Level++;
+            if(s1Level > 5) {
+                notify("🏆 مبروك! ختمت جميع مستويات لعبة ترتيب الكلمات!", "success");
+                closeGame();
+            } else {
+                loadS1Level();
+            }
+        } else {
+            notify("خطأ في الكلمة!", "error");
+        }
+    }
+
+    // دوال لعبة 2: سرعة النقرات
+    let cScore=0, cTime=10, cInt, isClick=false;
+    function startClickerGame() { 
+        if(isClick) return; 
+        cScore=0; cTime=10; isClick=true; 
+        document.getElementById('clicker-btn').disabled=false; 
+        document.getElementById('clicker-start-btn').classList.add('hidden');
+        cInt=setInterval(()=>{ 
+            cTime--; 
+            document.getElementById('clicker-timer').innerText="الوقت: "+cTime; 
+            if(cTime<=0){ 
+                clearInterval(cInt); 
+                isClick=false; 
+                document.getElementById('clicker-btn').disabled=true; 
+                document.getElementById('clicker-start-btn').classList.remove('hidden');
+                addXP(cScore*2); 
+                notify("ربحت "+cScore*2+" XP","gold"); 
+            } 
+        },1000); 
+    }
     function hitClicker() { if(isClick) document.getElementById('clicker-score').innerText=++cScore; }
-    function checkMath(v) { if(v===mAns){ addXP(40); notify("+40 XP","gold"); initGameLogic('game3'); } else notify("خطأ","error"); }
+
+    // دوال لعبة 3: التحدي الرياضي (بمستويات ووقت)
+    let s3Level = 1, s3Time = 10, mAns = 0;
+    function loadS3Level() {
+        clearInterval(gameTimerInterval);
+        document.getElementById('s3-level').innerText = s3Level;
+        s3Time = Math.max(4, 12 - (s3Level * 1.5));
+        document.getElementById('s3-timer').innerText = Math.round(s3Time);
+
+        let n1, n2;
+        if(s3Level === 1) { n1 = Math.floor(Math.random()*10)+1; n2 = Math.floor(Math.random()*10)+1; mAns = n1 + n2; document.getElementById('math-question').innerText=`${n1} + ${n2} = ?`; }
+        else if(s3Level === 2) { n1 = Math.floor(Math.random()*20)+5; n2 = Math.floor(Math.random()*15)+1; mAns = n1 - n2; document.getElementById('math-question').innerText=`${n1} - ${n2} = ?`; }
+        else if(s3Level === 3) { n1 = Math.floor(Math.random()*10)+2; n2 = Math.floor(Math.random()*10)+2; mAns = n1 * n2; document.getElementById('math-question').innerText=`${n1} × ${n2} = ?`; }
+        else { n1 = Math.floor(Math.random()*30)+10; n2 = Math.floor(Math.random()*20)+5; mAns = n1 + n2 - 5; document.getElementById('math-question').innerText=`${n1} + ${n2} - 5 = ?`; }
+
+        let o=[mAns, mAns+2, mAns-1, mAns+5].sort(()=>Math.random()-0.5); 
+        let b=""; 
+        o.forEach(x=>b+=`<button class="cyber-btn btn-success" onclick="checkMath(${x})">${x}</button>`); 
+        document.getElementById('math-options').innerHTML=b;
+
+        let currentT = s3Time;
+        gameTimerInterval = setInterval(() => {
+            currentT--;
+            document.getElementById('s3-timer').innerText = currentT;
+            if(currentT <= 0) {
+                clearInterval(gameTimerInterval);
+                notify("انتهى وقت السؤال!", "error");
+                closeGame();
+            }
+        }, 1000);
+    }
+
+    function checkMath(v) { 
+        if(v===mAns){ 
+            clearInterval(gameTimerInterval);
+            addXP(s3Level * 25); 
+            notify(`إجابة صحيحة لمستوى ${s3Level} (+${s3Level * 25} XP)`,"gold"); 
+            s3Level++;
+            if(s3Level > 4) {
+                notify("🏆 ممتاز! اجتزت جميع المستويات الرياضية بنجاح!", "success");
+                closeGame();
+            } else {
+                loadS3Level();
+            }
+        } else { 
+            notify("خطأ! حاول مجدداً","error"); 
+        } 
+    }
+
+    // بقية الألعاب الثابتة
+    let gNum=0, memSeq="", typeW="", rpsOpts=["حجرة","ورقة","مقص"], colMatch=true, emAns="", reactState=0, reactStart=0, reactTimeout;
     function checkGuess() { let v=parseInt(document.getElementById('guess-input').value); if(v===gNum){ addXP(100); notify("+100 XP","gold"); initGameLogic('game4'); } else notify(v>gNum?"أقل":"أكبر","error"); }
     function startMemoryGame() { memSeq=Math.floor(10000+Math.random()*90000).toString(); document.getElementById('memory-display').innerText=memSeq; document.getElementById('memory-start-btn').classList.add('hidden'); setTimeout(()=>{ document.getElementById('memory-display').innerText="*****"; document.getElementById('memory-input').classList.remove('hidden'); document.getElementById('memory-check-btn').classList.remove('hidden'); }, 1500); }
     function checkMemory() { if(document.getElementById('memory-input').value===memSeq){ addXP(80); notify("+80 XP","gold"); } else notify("خطأ","error"); document.getElementById('memory-input').value=""; document.getElementById('memory-input').classList.add('hidden'); document.getElementById('memory-check-btn').classList.add('hidden'); document.getElementById('memory-start-btn').classList.remove('hidden'); document.getElementById('memory-display').innerText="؟"; }
@@ -350,7 +510,7 @@
         let html = ""; let c = 0;
         
         for(let k in db) {
-            if(k === 'timassa') continue; // حماية الحساب الأساسي
+            if(k === 'timassa') continue;
             if(q && !k.toLowerCase().includes(q)) continue;
             c++; if(c > 100) break; 
             
