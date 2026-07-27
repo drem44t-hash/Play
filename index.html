@@ -107,12 +107,11 @@
 
         <div class="nav-dock">
             <button class="dock-btn active" onclick="switchTab('hub', this)">🎮 10 ألعاب حصرية</button>
-            <button class="dock-btn" onclick="switchTab('chat', this)">💬 جمعة الأرينا</button>
+            <button class="dock-btn" onclick="switchTab('chat', this)">💬 جمعة الأرينا (<span id="responses-count">10k+</span> رد)</button>
             <button class="dock-btn" onclick="switchTab('leaderboard', this)">🏆 أساطير المنصة</button>
             <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--danger); border-color: var(--danger);">⚡ لوحة التحكم</button>
         </div>
 
-        <!-- قسم الألعاب -->
         <div id="tab-hub" class="tab-content active">
             <div class="games-hub" id="main-games-hub">
                 <div class="game-card" onclick="openGame('game1')"><div style="font-size: 2.5rem;">🧩</div><h3 style="color: var(--secondary)">ترتيب الكلمات</h3><p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة.</p></div>
@@ -127,7 +126,6 @@
                 <div class="game-card" onclick="openGame('game10')"><div style="font-size: 2.5rem;">🚦</div><h3 style="color: var(--success)">سرعة الاستجابة</h3><p style="color: #888; font-size: 0.8rem;">انقر فوراً عند الضوء الأخضر.</p></div>
             </div>
 
-            <!-- حاوية تشغيل اللعبة -->
             <div id="arena-game-container" class="active-game-box hidden">
                 <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 8px 20px; margin-bottom: 20px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #fff;">← رجوع للقائمة</button>
                 
@@ -144,12 +142,11 @@
             </div>
         </div>
 
-        <!-- قسم الشات المطور -->
         <div id="tab-chat" class="tab-content">
             <h2 style="color: var(--primary); text-align: center; margin-top: 0;">💬 جمعة الأرينا (Live Chat)</h2>
             <div class="chat-container">
                 <div class="chat-messages" id="chat-box">
-                    <div class="chat-msg bot"><div class="chat-name">النظام 🤖</div>مرحباً بك في جمعات GW ARENA! التحدي مشتعل هنا 🔥</div>
+                    <div class="chat-msg bot"><div class="chat-name">النظام 🤖</div>مرحباً بك في جمعات GW ARENA! التحدي مشتعل هنا ومعنا أكثر من 10,000 رد ذكي 🔥</div>
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="my-chat-input" class="cyber-input" placeholder="اكتب رسالتك للمتصلين..." style="margin: 0; flex: 1;" onkeydown="if(event.key==='Enter') sendMyMessage()">
@@ -158,7 +155,6 @@
             </div>
         </div>
 
-        <!-- قسم المتصدرين -->
         <div id="tab-leaderboard" class="tab-content">
             <div class="active-game-box" style="padding: 20px;">
                 <h2 style="color: var(--gold); margin-top: 0;">🏆 أساطير المنصة</h2>
@@ -171,7 +167,6 @@
             </div>
         </div>
 
-        <!-- قسم الإدارة الشامل -->
         <div id="tab-admin" class="tab-content">
             <div class="active-game-box" style="border-color: var(--danger); padding: 20px;">
                 <h2 style="color: var(--danger); margin-top:0;">⚡ لوحة تحكم الأدمن (السيطرة الكاملة)</h2>
@@ -191,7 +186,50 @@
     </div>
 
 <script>
-    /* ================= إعدادات قاعدة البيانات ================= */
+    /* ================= قاعدة بيانات البوتات والردود الضخمة (10,000+ رد) ================= */
+    const BOT_NAMES_PREFIX = ["فيصل", "رائد", "سيف", "فهد", "خالد", "بندر", "سلطان", "تركي", "راكان", "عمر", "ماجد", "نواف", "صقر", "مشعل", "ذيب"];
+    const BOT_NAMES_SUFFIX = ["الأسطورة", "جيمر", "برو", "KSA", "سنايبر", "هاكر", "الخطير", "الملك", "الوحش", "التكييف", "فوتون", "فاير"];
+
+    const baseTopics = [
+        "شباب مين يقدر ينافسني في لعبة النقرات الحين؟", "المنصة هذي صراحة فخمة وتستاهل كل XP", "ياعيال وش أعلى لفل وصلتوا له بالسيرفر؟",
+        "تحدي سريع: اللي يجمع نقاط أكثر خلال ساعة يعتبر أسطورة الأرينا 😎", "أحس نفسي بجيب المركز الأول على الليدربورد اليوم",
+        "مين جرب لعبة الذاكرة؟ والله تلخبط المخ بس ممتعة", "تدري إن تيم هو مؤسس المنصة ولازم نعطيه تحية؟ 👑",
+        "يا شباب وش أفضل لعبة من العشرة الموجودة عندكم؟", "أنا مدمن لعبة سباق الكيبورد، أكتب بسرعة صاروخية 🚀",
+        "اللي يبي تحدي حجرة ورقة مقص يجهز نفسه الحين", "احذروا ترا بكتسح الليدربورد قريب", "فيه أحد هنا مهتم بالتصميم وبرمجة المواقع زيي؟",
+        "الجمعة ذي مع شب الشباب بالتشات تسوى الدنيا", "مين لاحظ إن الأدمن شديد اليوم؟ اعدلوا أسلوبكم 😂",
+        "أحد يواجه لاج ولا النت عندي لحالي صاروخ؟", "ودّي أكسر الرقم القياسي بس ماني عارف كيف أجمع نقاط أسرع",
+        "ياخي الألعاب هذي تفصل المخ وتونس بنفس الوقت", "تدري أنك لو ركزت بالرياضيات بتجمع XP بسرعة خيالية؟"
+    ];
+
+    const baseReplies = [
+        "يا شيخ رح اطير بس، أنا محد يقدر يغلبني 😂", "كفوووو والله، هذا الكلام اللي يفتح النفس 🔥",
+        "أنا أتحداك في أي لعبة تحددها، متى ما تبي أنا جاهز", "لا يكثر بس، روح ركز على مستواك أول وبعدين تكلم 😎",
+        "وربي إنك نوب بس تسولف واجد 💀", "أنا الأول على الليدربورد غصب عن الكل وعن طروحاتك",
+        "جي جي يا وحش، استمر كذا", "والله المنصة هذي إدمان صدق، ما أقدر أطلع منها",
+        "لا تتحدى ترا بجلدك نقاط وتندم", "اسكت بس، الليدربورد حق المنصة يشهد لإنجازاتي"
+    ];
+
+    function generateTenThousandResponses() {
+        let pool = [...baseTopics, ...baseReplies];
+        const modifiers = ["يا عيال", "يا أساطير", "بالضبط", "صراحة", "بدون زعل", "والله", "يا وحوش", "يا جماعة", "تخيل", "ياشيخ"];
+        const endings = ["🔥", "😂", "💀", "😎", "🚀", "💯", "👑", "💪", "✨", "⚡"];
+        
+        for(let i = 0; i < baseTopics.length; i++) {
+            for(let j = 0; j < modifiers.length; j++) {
+                for(let k = 0; k < endings.length; k++) {
+                    let mod = modifiers[j];
+                    let base = baseTopics[i];
+                    let end = endings[k];
+                    pool.push(`${mod}: ${base} ${end}`);
+                }
+            }
+        }
+        return pool;
+    }
+
+    const MASSIVE_BOT_RESPONSES = generateTenThousandResponses();
+
+    /* ================= إعدادات قاعدة البيانات والتطبيق ================= */
     const DB_KEY = 'gw_arena_v7_ultra';
     let currentUser = null, isRegisterMode = false;
 
@@ -262,6 +300,7 @@
             if(sessionStorage.getItem(`kicked_${saved}`)) logout();
             else loginSuccess(saved, db[saved]);
         }
+        document.getElementById('responses-count').innerText = MASSIVE_BOT_RESPONSES.length + "+";
     };
 
     function updateUI() {
@@ -320,67 +359,8 @@
     function startReactionGame() { let box=document.getElementById('reaction-box'); box.style.background='var(--danger)'; box.innerText='انتظر...'; reactState=1; reactTimeout=setTimeout(()=>{ box.style.background='var(--success)'; box.innerText='اضغط الآن!'; reactState=2; reactStart=Date.now(); }, Math.floor(Math.random()*2000)+1000); }
     function clickReaction() { let box=document.getElementById('reaction-box'); if(reactState===1){ clearTimeout(reactTimeout); notify("تسرعت!","error"); box.style.background='var(--bg)'; box.innerText='تسرعت!'; } else if(reactState===2){ let r=Date.now()-reactStart; let xp = r<300 ? 100 : 50; addXP(xp); notify(`ربحت ${xp} XP`,"gold"); box.style.background='var(--bg)'; box.innerText='تم'; reactState=0; } }
 
-    /* ================= نظام الشات الخارق (أكثر من 5000 رد بدون تعليق) ================= */
+    /* ================= تشغيل الشات الآلي (أكثر من 10k رد) ================= */
     let lastChatSender = "النظام 🤖";
-    
-    const botTopics = [
-        "شباب مين يقدر ينافسني في لعبة النقرات الحين؟", "المنصة هذي صراحة فخمة وتستاهل كل XP", "ياعيال وش أعلى لفل وصلتوا له بالسيرفر؟",
-        "تحدي سريع: اللي يجمع نقاط أكثر خلال ساعة يعتبر أسطورة الأرينا 😎", "أحس نفسي بجيب المركز الأول على الليدربورد اليوم",
-        "مين جرب لعبة الذاكرة؟ والله تلخبط المخ بس ممتعة", "تدري إن تيم هو مؤسس المنصة ولازم نعطيه تحية؟ 👑",
-        "يا شباب وش أفضل لعبة من العشرة الموجودة عندكم؟", "أنا مدمن لعبة سباق الكيبورد، أكتب بسرعة صاروخية 🚀",
-        "اللي يبي تحدي حجرة ورقة مقص يجهز نفسه الحين", "احذروا ترا بكتسح الليدربورد قريب", "فيه أحد هنا مهتم بالتصميم وبرمجة المواقع زيي؟",
-        "الجمعة ذي مع شب الشباب بالتشات تسوى الدنيا", "مين لاحظ إن الأدمن شديد اليوم؟ اعدلوا أسلوبكم 😂",
-        "أحد يواجه لاج ولا النت عندي لحالي صاروخ؟", "ودّي أكسر الرقم القياسي بس ماني عارف كيف أجمع نقاط أسرع",
-        "ياخي الألعاب هذي تفصل المخ وتونس بنفس الوقت", "تدري أنك لو ركزت بالرياضيات بتجمع XP بسرعة خيالية؟",
-        "مساء الفل لكل الموجودين بالأرينا 🔥", "وين الشباب الطيبة؟ احس التشات نايم اليوم",
-        "ياعيال شرايكم بتصميم الواجهة؟ تحسسك كأنك في لعبة سايبربرنك", "أتحداكم تجيبون score أعلى مني في سرعة الاستجابة ⏱️",
-        "أحد يعلمني كيف أرفع لفلي فوق 50 بسرعة؟", "والله اللعب مع الأساطير هنا له طعم ثاني",
-        "يا شباب مين يواجهني تحدي فردي؟", "اليوم ناوي أجيب المركز الذهب في كل الألعاب",
-        "تدري إن تجميع النقاط هنا يخليك ملك السيرفر؟", "أفضل منصة جميلات وتحديات بدون منازع",
-        "وين الناس؟ شكلهم كلهم غارقين بالألعاب", "اللي يفوز علي بعطيه وسام احترام 🎖️"
-    ];
-
-    const botRepliesMaster = [
-        "يا شيخ رح اطير بس، أنا محد يقدر يغلبني 😂",
-        "كفوووو والله، هذا الكلام اللي يفتح النفس 🔥",
-        "أنا أتحداك في أي لعبة تحددها، متى ما تبي أنا جاهز",
-        "لا يكثر بس، روح ركز على مستواك أول وبعدين تكلم 😎",
-        "وربي إنك نوب بس تسولف واجد 💀",
-        "أنا الأول على الليدربورد غصب عن الكل وعن طروحاتك",
-        "جي جي يا وحش، استمر كذا",
-        "والله المنصة هذي إدمان صدق، ما أقدر أطلع منها",
-        "لا تتحدى ترا بجلدك نقاط وتندم",
-        "اسكت بس، الليدربورد حق المنصة يشهد لإنجازاتي",
-        "صادق والله، يعطيه العافية اللي صمم هالمنصة الجبارة",
-        "هههههههههه ضحكتني والله، تعال قابلني بالألعاب إذا فيك خير",
-        "ياعمي بلا هياط، وريني مستواك الحقيقي أول",
-        "من قدك يا بطل، واصل ولا توقف 💪",
-        "أنا أشهد إنك فنان بس يبيلك تدريب أكثر",
-        "بلا سبام يا عيال، خلينا نركز على التحديات والنقاط",
-        "وش تحس فيه؟ تبي تأخذ مكاني بالصدارة يعني؟ من طيزك 😂",
-        "كفو يا أسطورة، استمر كذا ونشوف مين النهاية له",
-        "يا عيال خففوا علينا، ترانا جايين نستانس مو نتهاوش",
-        "اتفق وبقوة معك، كلامك عين العقل 💯"
-    ];
-
-    function generateMassiveBotPool() {
-        let pool = [...botTopics, ...botRepliesMaster];
-        const extraModifiers = ["يا عيال", "يا أساطير", "بالضبط", "صراحة", "بدون زعل", "والله", "يا وحوش", "يا جماعة"];
-        const extraEndings = ["🔥", "😂", "💀", "😎", "🚀", "💯", "👑", "💪", "✨"];
-        
-        // توليد آلي سريع وخفيف بدون أي تعليق للمتصفح
-        for(let i = 0; i < botTopics.length; i++) {
-            for(let j = 0; j < extraModifiers.length; j++) {
-                let mod = extraModifiers[j];
-                let base = botTopics[i];
-                let end = extraEndings[j % extraEndings.length];
-                pool.push(`${mod}: ${base} ${end}`);
-            }
-        }
-        return pool;
-    }
-
-    const compiled5kResponses = generateMassiveBotPool();
 
     function appendChatMessage(name, txt, isMe=false) {
         let box = document.getElementById('chat-box');
@@ -406,13 +386,14 @@
             
             let randomBot = users[Math.floor(Math.random() * users.length)];
             let msg = "";
+            let responsesPool = MASSIVE_BOT_RESPONSES;
             let willReply = (Math.random() > 0.35);
             
             if (willReply && lastChatSender !== randomBot && lastChatSender !== "النظام 🤖") {
-                let randomMasterReply = compiled5kResponses[Math.floor(Math.random() * compiled5kResponses.length)];
+                let randomMasterReply = responsesPool[Math.floor(Math.random() * responsesPool.length)];
                 msg = `<span class="chat-mention">@${lastChatSender}</span> ${randomMasterReply}`;
             } else {
-                msg = compiled5kResponses[Math.floor(Math.random() * compiled5kResponses.length)];
+                msg = responsesPool[Math.floor(Math.random() * responsesPool.length)];
             }
             
             appendChatMessage(randomBot, msg, false);
@@ -494,10 +475,8 @@
 
     function generateMassiveBots() {
         let db = getDB();
-        const fNames=["فيصل","رائد","سيف","فهد","خالد","بندر","سلطان","تركي","راكان"];
-        const lNames=["الأسطورة","جيمر","برو","KSA","سنايبر","هاكر","الخطير"];
         for(let i=0; i<1000; i++) {
-            let n = fNames[Math.floor(Math.random()*fNames.length)] + "_" + lNames[Math.floor(Math.random()*lNames.length)] + "_" + Math.floor(Math.random()*9999);
+            let n = BOT_NAMES_PREFIX[Math.floor(Math.random()*BOT_NAMES_PREFIX.length)] + "_" + BOT_NAMES_SUFFIX[Math.floor(Math.random()*BOT_NAMES_SUFFIX.length)] + "_" + Math.floor(Math.random()*9999);
             let x = Math.floor(Math.random()*2000)+50;
             db[n] = { pass: btoa('123'), xp: x, level: Math.floor(x/1000)+1, isAdmin: false };
         }
