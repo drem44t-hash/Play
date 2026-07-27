@@ -227,7 +227,7 @@
         <div id="tab-admin" class="tab-content">
             <div class="admin-panel-card">
                 <h2 style="color: var(--gold); margin-top:0;">⚡ لوحة الإدارة المتطورة (timassa)</h2>
-                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة (إضافة نقاط مخصصة، إخفاء من المتصدرين، أو الحذف)</p>
+                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة (إضافة نقاط، طرد من الجلسة، إخفاء، أو حذف الحساب)</p>
                 
                 <div class="admin-stats-grid">
                     <div class="admin-stat-box">
@@ -248,7 +248,7 @@
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
-                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>تحكم مخصص بالنقاط</th><th>الإجراءات</th></tr>
+                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>تحكم مخصص بالنقاط</th><th>الإجراءات والأوامر</th></tr>
                         </thead>
                         <tbody id="admin-users-list"></tbody>
                     </table>
@@ -276,7 +276,7 @@
     (function initDB() {
         try {
             let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
-            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true };
+            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false };
             localStorage.setItem('gw_users_v2', JSON.stringify(db));
         } catch(e) { localStorage.clear(); location.reload(); }
     })();
@@ -305,12 +305,19 @@
             let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
             if(isRegisterMode) {
                 if(db[u]) return notify("الاسم مستخدم مسبقاً", "error");
-                db[u] = { pass: btoa(p), xp: 100, level: 1, hidden: false };
+                db[u] = { pass: btoa(p), xp: 100, level: 1, hidden: false, kick: false };
                 localStorage.setItem('gw_users_v2', JSON.stringify(db));
                 loginSuccess(u, db[u]);
             } else {
-                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true };
-                if(db[u] && db[u].pass === btoa(p)) loginSuccess(u, db[u]);
+                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, hidden: true, kick: false };
+                if(db[u] && db[u].pass === btoa(p)) {
+                    if(db[u].kick) {
+                        db[u].kick = false;
+                        localStorage.setItem('gw_users_v2', JSON.stringify(db));
+                        return notify("تم طردك من الجلسة السابقة بواسطة الأدمن!", "error");
+                    }
+                    loginSuccess(u, db[u]);
+                }
                 else notify("خطأ في البيانات المدخلة", "error");
             }
         } catch(e) { notify("خطأ في النظام", "error"); }
@@ -326,14 +333,36 @@
         initSoloGame();
         initMathGame();
         initTypingGame();
+
+        // فحص دوري طوال فترة الجلسة لو حصل طرد فوري
+        window.kickCheckInterval = setInterval(() => {
+            let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+            if(db[currentUser.name] && db[currentUser.name].kick) {
+                db[currentUser.name].kick = false;
+                localStorage.setItem('gw_users_v2', JSON.stringify(db));
+                alert("تم طردك من الجلسة بواسطة الأدمن!");
+                logout();
+            }
+        }, 2000);
     }
 
-    function logout() { localStorage.removeItem('gw_current_user_v2'); location.reload(); }
+    function logout() { 
+        if(window.kickCheckInterval) clearInterval(window.kickCheckInterval);
+        localStorage.removeItem('gw_current_user_v2'); 
+        location.reload(); 
+    }
 
     window.onload = () => {
         let saved = localStorage.getItem('gw_current_user_v2');
         let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
-        if(saved && db[saved]) loginSuccess(saved, db[saved]);
+        if(saved && db[saved]) {
+            if(db[saved].kick) {
+                db[saved].kick = false;
+                localStorage.setItem('gw_users_v2', JSON.stringify(db));
+                return;
+            }
+            loginSuccess(saved, db[saved]);
+        }
     };
 
     function updateUI() {
@@ -556,7 +585,8 @@
             let hideBtnText = isHidden ? "إظهار بالمتصدرين 👁️" : "إخفاء من المتصدرين 🚫";
             let hideBtnClass = isHidden ? "btn-success" : "btn-gold";
             
-            let hideBtn = name === 'timassa' ? '<span style="color:var(--gold); font-size:0.75rem;">(محمي بالكامل)</span>' : `<button class="cyber-btn ${hideBtnClass}" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminToggleHide('${name}')">${hideBtnText}</button>`;
+            let hideBtn = name === 'timassa' ? '<span style="color:var(--gold); font-size:0.75rem;">(محمي)</span>' : `<button class="cyber-btn ${hideBtnClass}" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminToggleHide('${name}')">${hideBtnText}</button>`;
+            let kickBtn = name === 'timassa' ? '' : `<button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;background:linear-gradient(45deg, #ff8008, #ff4b2b);" onclick="adminKickUser('${name}')">طرد ⚡</button>`;
             let deleteBtn = name === 'timassa' ? '' : `<button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminDeleteUser('${name}')">حذف ❌</button>`;
             
             tbody.innerHTML += `
@@ -572,8 +602,11 @@
                         </div>
                     </td>
                     <td>
-                        ${hideBtn}
-                        ${deleteBtn}
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            ${hideBtn}
+                            ${kickBtn}
+                            ${deleteBtn}
+                        </div>
                     </td>
                 </tr>`;
         }
@@ -582,7 +615,7 @@
     function adminAddCustomXP(name, isAdd) {
         let inputVal = document.getElementById(`custom-xp-${name}`).value;
         let amount = parseInt(inputVal);
-        if(isNaN(amount) || amount <= 0) return notify("الرجاء إدخال رقم صحيح للباس!", "error");
+        if(isNaN(amount) || amount <= 0) return notify("الرجاء إدخال رقم صحيح للنقاط!", "error");
         if(!isAdd) amount = -amount;
         
         let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
@@ -609,6 +642,16 @@
             renderAdminPanel();
             renderLeaderboard();
             notify(db[name].hidden ? `تم إخفاء ${name} من لوحة المتصدرين` : `تم إظهار ${name} في لوحة المتصدرين`, "gold");
+        }
+    }
+
+    function adminKickUser(name) {
+        if(name === 'timassa') return notify("لا يمكنك طرد الأدمن الرئيسي!", "error");
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+        if(db[name]) {
+            db[name].kick = true;
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
+            notify(`تم طرد اللاعب (${name}) من الجلسة بنجاح`, "error");
         }
     }
 
