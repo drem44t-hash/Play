@@ -8,13 +8,13 @@
     <style>
         :root {
             --primary: #00f2fe; --secondary: #4facfe; --gold: #ffd700; --danger: #ff4b2b; --success: #00b09b;
-            --bg: #050505; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
+            --bg: #0a0a0c; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; outline: none; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg); color: white; min-height: 100vh; overflow-x: hidden; }
 
         #toast-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background: rgba(20, 20, 30, 0.95); backdrop-filter: blur(10px); color: white; padding: 15px; border-radius: 12px; border-right: 5px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast { background: rgba(20, 20, 30, 0.95); backdrop-filter: blur(10px); color: white; padding: 15px; border-radius: 12px; border-right: 5px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: bold; }
         .toast.error { border-color: var(--danger); } .toast.gold { border-color: var(--gold); }
 
         .auth-screen { position: fixed; inset: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(20px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -58,6 +58,11 @@
 
         .math-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 400px; margin: 20px auto; }
         .hidden { display: none !important; }
+
+        /* تنسيق لوحة الأدمن الاحترافية الجديدة */
+        .admin-panel-card { background: rgba(15, 15, 25, 0.8); border: 1px solid rgba(255,215,0,0.3); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .admin-stat-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; border: 1px solid var(--border); text-align: center; }
     </style>
 </head>
 <body>
@@ -67,7 +72,7 @@
     <div id="auth-screen" class="auth-screen">
         <div class="auth-card">
             <h1 style="color: var(--primary); font-size: 2rem;">GW ARENA</h1>
-            <p style="color: #aaa; margin-bottom: 20px;">منصة الألعاب الترفيهية والتحديات</p>
+            <p style="color: #aaa; margin-bottom: 20px;">منصة التحديات والألعاب الترفيهية</p>
             <input type="text" id="username" class="cyber-input" placeholder="اسم المستخدم">
             <input type="password" id="password" class="cyber-input" placeholder="كلمة المرور">
             <button class="cyber-btn btn-main" onclick="handleLogin()" style="margin-top: 10px;">دخول المنصة</button>
@@ -91,8 +96,8 @@
 
         <div class="nav-dock">
             <button class="dock-btn active" onclick="switchTab('hub', this)">🎮 الألعاب الترفيهية</button>
-            <button class="dock-btn" onclick="switchTab('leaderboard', this)">🏆 المتصدرين واللاعبين</button>
-            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ الإدارة</button>
+            <button class="dock-btn" onclick="switchTab('leaderboard', this)">🏆 المتصدرين</button>
+            <button id="admin-nav-btn" class="dock-btn hidden" onclick="switchTab('admin', this)" style="color: var(--gold);">⚡ إدارة المنصة</button>
         </div>
 
         <div id="tab-hub" class="tab-content active">
@@ -100,31 +105,44 @@
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🧩</div>
                     <h3 style="color: var(--secondary)">ترتيب الكلمات</h3>
-                    <p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة.</p>
+                    <p style="color: #888; font-size: 0.8rem;">رتب الحروف المبعثرة بشكل صحيح.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game1')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">⚡</div>
                     <h3 style="color: var(--danger)">سرعة النقرات</h3>
-                    <p style="color: #888; font-size: 0.8rem;">اختبر سرعة ردة فعل.</p>
+                    <p style="color: #888; font-size: 0.8rem;">اختبر سرعة ردة فعلك ونقراتك.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game2')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🧮</div>
                     <h3 style="color: var(--success)">التحدي الرياضي</h3>
-                    <p style="color: #888; font-size: 0.8rem;">حل المعادلات بأسرع وقت.</p>
+                    <p style="color: #888; font-size: 0.8rem;">حل المعادلات الحسابية السريعة.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game3')">العب</button>
                 </div>
                 <div class="game-card">
                     <div style="font-size: 2.5rem;">🎯</div>
                     <h3 style="color: var(--gold)">تخمين الأرقام</h3>
-                    <p style="color: #888; font-size: 0.8rem;">اعثر على الرقم الصحيح.</p>
+                    <p style="color: #888; font-size: 0.8rem;">اعثر على الرقم المخفي بدقة.</p>
                     <button class="cyber-btn btn-main" onclick="openGame('game4')">العب</button>
+                </div>
+                <!-- الألعاب الجديدة الإضافية لكسر الملل -->
+                <div class="game-card">
+                    <div style="font-size: 2.5rem;">🧠</div>
+                    <h3 style="color: var(--primary)">تحدي الذاكرة</h3>
+                    <p style="color: #888; font-size: 0.8rem;">اختبر قوة ذاكرتك واكتشف الأنماط.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game5')">العب</button>
+                </div>
+                <div class="game-card">
+                    <div style="font-size: 2.5rem;">🚀</div>
+                    <h3 style="color: var(--secondary)">العد التنازلي</h3>
+                    <p style="color: #888; font-size: 0.8rem;">اكتب الكلمات المطلوبة بأقصى سرعة.</p>
+                    <button class="cyber-btn btn-main" onclick="openGame('game6')">العب</button>
                 </div>
             </div>
 
             <div id="arena-game-container" class="active-game-box hidden" style="margin-top: 20px;">
-                <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 5px 15px; margin-bottom: 15px; background: #222; color: #aaa; font-size: 0.8rem;">← العودة</button>
+                <button class="cyber-btn" onclick="closeGame()" style="width: auto; padding: 5px 15px; margin-bottom: 15px; background: #222; color: #aaa; font-size: 0.8rem;">← العودة للقائمة</button>
                 
                 <!-- لعبة 1: ترتيب الكلمات -->
                 <div id="subgame-1" class="subgame hidden">
@@ -139,7 +157,7 @@
                     <input type="text" id="solo-input" class="cyber-input" placeholder="اكتب الكلمة الصحيحة..." style="max-width: 350px; margin: 0 auto 15px auto;" onkeydown="if(event.key==='Enter') checkSolo()">
                     <div style="display: flex; gap: 10px; justify-content: center;">
                         <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 150px;">تحقق</button>
-                        <button class="cyber-btn btn-danger" onclick="skipGame(1)" style="max-width: 150px;">تخطي ⏭</button>
+                        <button class="cyber-btn btn-danger" onclick="skipGame(1)" style="max-width: 170px;">تخطي (-50 XP) ⏭</button>
                     </div>
                 </div>
 
@@ -159,7 +177,7 @@
                     <div class="word-display" id="math-question">5 + 3 = ?</div>
                     <div class="math-grid" id="math-options" style="margin: 0 auto; max-width: 350px;"></div>
                     <br>
-                    <button class="cyber-btn btn-danger" onclick="skipGame(3)" style="max-width: 150px; margin: 0 auto;">تخطي ⏭</button>
+                    <button class="cyber-btn btn-danger" onclick="skipGame(3)" style="max-width: 170px; margin: 0 auto;">تخطي (-50 XP) ⏭</button>
                 </div>
 
                 <!-- لعبة 4: تخمين الأرقام -->
@@ -174,16 +192,35 @@
                     <input type="number" id="guess-input" class="cyber-input" placeholder="ادخل الرقم..." style="max-width: 250px; margin: 0 auto 15px auto;">
                     <div style="display: flex; gap: 10px; justify-content: center;">
                         <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 150px;">تخمين</button>
-                        <button class="cyber-btn btn-danger" onclick="skipGame(4)" style="max-width: 150px;">تخطي ⏭</button>
+                        <button class="cyber-btn btn-danger" onclick="skipGame(4)" style="max-width: 170px;">تخطي (-50 XP) ⏭</button>
                     </div>
+                </div>
+
+                <!-- لعبة 5: الذاكرة السريعة (جديدة) -->
+                <div id="subgame-5" class="subgame hidden">
+                    <h2 style="color: var(--primary)">تحدي الذاكرة البصرية</h2>
+                    <p style="color: #aaa;">احفظ الأرقام التالية ثم اكتبها:</p>
+                    <div class="word-display" id="memory-display">1234</div>
+                    <input type="text" id="memory-input" class="cyber-input hidden" placeholder="اكتب الأرقام التي ظهرت..." style="max-width: 300px; margin: 0 auto 15px auto;">
+                    <button class="cyber-btn btn-gold" id="memory-start-btn" onclick="startMemoryGame()" style="max-width: 180px; margin: 0 auto;">ابدأ الاختبار</button>
+                    <button class="cyber-btn btn-success hidden" id="memory-check-btn" onclick="checkMemory()" style="max-width: 180px; margin: 0 auto;">تحقق</button>
+                </div>
+
+                <!-- لعبة 6: سباق الكتابة (جديدة) -->
+                <div id="subgame-6" class="subgame hidden">
+                    <h2 style="color: var(--secondary)">سباق سرعة الكلمات</h2>
+                    <p style="color: #aaa;">اكتب الكلمة التالية بدقة:</p>
+                    <div class="word-display" id="typing-target">برمجة</div>
+                    <input type="text" id="typing-input" class="cyber-input" placeholder="اكتب هنا..." style="max-width: 300px; margin: 0 auto 15px auto;" oninput="checkTypingRace()">
+                    <button class="cyber-btn btn-danger" onclick="skipGame(6)" style="max-width: 170px; margin: 0 auto;">تخطي (-50 XP) ⏭</button>
                 </div>
             </div>
         </div>
 
         <div id="tab-leaderboard" class="tab-content">
             <div class="active-game-box">
-                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين واللاعبين</h2>
-                <p style="color: #888; font-size: 0.85rem;">تابع ترتيبك ومستوى زملائك في المنصة</p>
+                <h2 style="color: var(--gold)">🏆 لوحة المتصدرين</h2>
+                <p style="color: #888; font-size: 0.85rem;">تابع ترتيبك ومستوى النشاط بين اللاعبين</p>
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
@@ -196,13 +233,30 @@
         </div>
 
         <div id="tab-admin" class="tab-content">
-            <div class="active-game-box" style="text-align: right;">
-                <h2 style="color: var(--gold)">⚡ لوحة التحكم الإدارية (timassa)</h2>
-                <input type="text" id="admin-search-input" class="cyber-input" placeholder="ابحث عن لاعب..." oninput="renderAdminPanel()" style="margin-bottom: 15px;">
+            <div class="admin-panel-card">
+                <h2 style="color: var(--gold); margin-top:0;">⚡ لوحة الإدارة المتطورة (timassa)</h2>
+                <p style="color: #aaa; font-size: 0.85rem;">تحكم كاملاً بأعضاء المنصة والبيانات</p>
+                
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-box">
+                        <div style="color: #888; font-size: 0.8rem;">إجمالي الأعضاء</div>
+                        <div id="admin-total-users" style="color: var(--primary); font-size: 1.5rem; font-weight: bold;">0</div>
+                    </div>
+                    <div class="admin-stat-box">
+                        <div style="color: #888; font-size: 0.8rem;">أعلى نقاط مسجلة</div>
+                        <div id="admin-top-xp" style="color: var(--gold); font-size: 1.5rem; font-weight: bold;">0</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input type="text" id="admin-search-input" class="cyber-input" placeholder="ابحث عن اسم لاعب..." oninput="renderAdminPanel()" style="margin: 0; flex: 1;">
+                    <button class="cyber-btn btn-danger" onclick="adminResetAllData()" style="width: auto; padding: 0 20px; font-size: 0.9rem;">تصفير كافة النقاط</button>
+                </div>
+
                 <div style="overflow-x: auto;">
                     <table class="cyber-table">
                         <thead>
-                            <tr><th>المستخدم</th><th>الرصيد</th><th>الإجراءات</th></tr>
+                            <tr><th>المستخدم</th><th>النقاط</th><th>المستوى</th><th>إدارة النقاط</th></tr>
                         </thead>
                         <tbody id="admin-users-list"></tbody>
                     </table>
@@ -219,6 +273,7 @@
     let targetNumber = 10;
     let currentMaxGuess = 10;
     let mathAnswer = 0;
+    let memorySequence = "";
 
     function emergencyReset() {
         localStorage.clear();
@@ -228,9 +283,9 @@
 
     (function initDB() {
         try {
-            let db = JSON.parse(localStorage.getItem('gw_users')) || {};
-            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, isLegend: true };
-            localStorage.setItem('gw_users', JSON.stringify(db));
+            let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+            db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true };
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
         } catch(e) { localStorage.clear(); location.reload(); }
     })();
 
@@ -255,36 +310,37 @@
             let u = document.getElementById('username').value.trim();
             let p = document.getElementById('password').value;
             if(!u || !p) return notify("املأ جميع الحقول", "error");
-            let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+            let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
             if(isRegisterMode) {
                 if(db[u]) return notify("الاسم مستخدم مسبقاً", "error");
                 db[u] = { pass: btoa(p), xp: 100, level: 1 };
-                localStorage.setItem('gw_users', JSON.stringify(db));
+                localStorage.setItem('gw_users_v2', JSON.stringify(db));
                 loginSuccess(u, db[u]);
             } else {
-                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true, isLegend: true };
+                if(u === 'timassa') db['timassa'] = { pass: btoa('123456'), xp: 999999999, level: 999, isAdmin: true };
                 if(db[u] && db[u].pass === btoa(p)) loginSuccess(u, db[u]);
-                else notify("خطأ في البيانات", "error");
+                else notify("خطأ في البيانات المدخلة", "error");
             }
         } catch(e) { notify("خطأ في النظام", "error"); }
     }
 
     function loginSuccess(name, data) {
         currentUser = { name, ...data };
-        localStorage.setItem('gw_current_user', name);
+        localStorage.setItem('gw_current_user_v2', name);
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').classList.add('visible');
         if(currentUser.name === 'timassa' || currentUser.isAdmin) document.getElementById('admin-nav-btn').classList.remove('hidden');
         updateUI();
         initSoloGame();
         initMathGame();
+        initTypingGame();
     }
 
-    function logout() { localStorage.removeItem('gw_current_user'); location.reload(); }
+    function logout() { localStorage.removeItem('gw_current_user_v2'); location.reload(); }
 
     window.onload = () => {
-        let saved = localStorage.getItem('gw_current_user');
-        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+        let saved = localStorage.getItem('gw_current_user_v2');
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
         if(saved && db[saved]) loginSuccess(saved, db[saved]);
     };
 
@@ -308,7 +364,7 @@
         document.getElementById('main-games-hub').classList.add('hidden');
         document.getElementById('arena-game-container').classList.remove('hidden');
         document.querySelectorAll('.subgame').forEach(s => s.classList.add('hidden'));
-        document.getElementById(`subgame-${id === 'game1' ? 1 : id === 'game2' ? 2 : id === 'game3' ? 3 : 4}`).classList.remove('hidden');
+        document.getElementById(`subgame-${id.replace('game','')}`).classList.remove('hidden');
     }
 
     function closeGame() {
@@ -317,26 +373,35 @@
     }
 
     function addXP(amt) {
-        if(currentUser.name === 'timassa') return;
+        if(currentUser.name === 'timassa' && amt > 0) return;
         currentUser.xp += amt;
+        if(currentUser.xp < 0) currentUser.xp = 0;
         currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
-        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
-        if(db[currentUser.name]) { db[currentUser.name].xp = currentUser.xp; db[currentUser.name].level = currentUser.level; localStorage.setItem('gw_users', JSON.stringify(db)); }
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+        if(db[currentUser.name]) { db[currentUser.name].xp = currentUser.xp; db[currentUser.name].level = currentUser.level; localStorage.setItem('gw_users_v2', JSON.stringify(db)); }
         updateUI();
     }
 
     function skipGame(gameNum) {
-        notify("تم تخطي السؤال بنجاح!", "error");
+        if(currentUser.name !== 'timassa' && currentUser.xp < 50) {
+            return notify("ليس لديك نقاط كافية للتخطي (تحتاج 50 XP)", "error");
+        }
+        if(currentUser.name !== 'timassa') {
+            addXP(-50);
+        }
+        notify("تم خصم 50 XP وتخطي السؤال بنجاح!", "error");
         if(gameNum === 1) initSoloGame();
         if(gameNum === 3) initMathGame();
         if(gameNum === 4) { targetNumber = Math.floor(Math.random() * currentMaxGuess) + 1; }
+        if(gameNum === 6) initTypingGame();
     }
 
+    // لعبة ترتيب الكلمات (مراحل سهلة وواضحة)
     const wordList = {
-        very_easy: ["قطة", "باب", "قلم", "كرة"],
-        easy: ["طاولة", "حاسوب", "منزل", "كتابة"],
-        hard: ["استراتيجية", "استكشاف", "مغامرات", "تكنولوجيا"],
-        extreme: ["Q$z9#kL!mP", "XyZ-9988-Rt", "0x99AF-Games"]
+        very_easy: ["تفاح", "قلم", "باب", "شمس"],
+        easy: ["حاسوب", "مكتبة", "مطرقة", "طاولة"],
+        hard: ["استراتيجية", "مغامرات", "تكنولوجيا", "استكشاف"],
+        extreme: ["مستقبلي", "ديناصور", "توجيهات", "الخوارزميات"]
     };
 
     function setDifficulty(diff, gameNum) {
@@ -355,14 +420,15 @@
     function checkSolo() {
         let val = document.getElementById('solo-input').value.trim();
         if(val === soloTarget) {
-            let reward = currentDiff === 'very_easy' ? 50 : currentDiff === 'easy' ? 100 : currentDiff === 'hard' ? 250 : 500;
+            let reward = currentDiff === 'very_easy' ? 30 : currentDiff === 'easy' ? 60 : currentDiff === 'hard' ? 120 : 200;
             addXP(reward);
             notify(`إجابة صحيحة! +${reward} XP`, "gold");
             document.getElementById('solo-input').value = "";
             initSoloGame();
-        } else { notify("خطأ، حاول مجدداً", "error"); }
+        } else { notify("إجابة خاطئة، حاول مجدداً", "error"); }
     }
 
+    // لعبة سرعة النقرات
     let clickerScore = 0, clickerTimer = 10, clickerInterval = null, isClickerActive = false;
     function startClickerGame() {
         if(isClickerActive) return;
@@ -378,22 +444,24 @@
                 isClickerActive = false;
                 document.getElementById('clicker-btn').setAttribute('disabled', 'true');
                 document.getElementById('clicker-start-btn').removeAttribute('disabled');
-                addXP(clickerScore * 10);
-                notify(`انتهى الوقت! ربحت ${clickerScore * 10} XP`, "gold");
+                let earned = clickerScore * 5;
+                addXP(earned);
+                notify(`انتهى الوقت! ربحت ${earned} XP`, "gold");
             }
         }, 1000);
     }
     function hitClicker() { if(isClickerActive) document.getElementById('clicker-score').innerText = ++clickerScore; }
 
+    // لعبة التحدي الرياضي
     function initMathGame() {
-        let n1 = Math.floor(Math.random() * 20) + 1;
-        let n2 = Math.floor(Math.random() * 20) + 1;
+        let n1 = Math.floor(Math.random() * 10) + 1;
+        let n2 = Math.floor(Math.random() * 10) + 1;
         let ops = ['+', '-'];
         let op = ops[Math.floor(Math.random() * ops.length)];
         mathAnswer = op === '+' ? n1 + n2 : n1 - n2;
         document.getElementById('math-question').innerText = `${n1} ${op} ${n2} = ?`;
         
-        let opts = [mathAnswer, mathAnswer + 2, mathAnswer - 3, mathAnswer + 5].sort(()=>Math.random()-0.5);
+        let opts = [mathAnswer, mathAnswer + 1, mathAnswer - 2, mathAnswer + 3].sort(()=>Math.random()-0.5);
         let grid = document.getElementById('math-options');
         grid.innerHTML = "";
         opts.forEach(ans => {
@@ -402,13 +470,14 @@
             btn.style.padding = '10px';
             btn.innerText = ans;
             btn.onclick = () => {
-                if(ans === mathAnswer) { addXP(150); notify("إجابة رياضية صحيحة! +150 XP", "gold"); initMathGame(); }
+                if(ans === mathAnswer) { addXP(50); notify("إجابة رياضية صحيحة! +50 XP", "gold"); initMathGame(); }
                 else { notify("خطأ رياضي!", "error"); }
             };
             grid.appendChild(btn);
         });
     }
 
+    // لعبة تخمين الأرقام
     function setGuessDiff(max) {
         currentMaxGuess = max;
         targetNumber = Math.floor(Math.random() * max) + 1;
@@ -417,15 +486,61 @@
     function checkGuess() {
         let val = parseInt(document.getElementById('guess-input').value);
         if(val === targetNumber) {
-            addXP(currentMaxGuess * 10);
-            notify("كفو! خمنت الرقم الصحيح", "gold");
+            let reward = currentMaxGuess === 10 ? 40 : currentMaxGuess === 50 ? 100 : 200;
+            addXP(reward);
+            notify(`كفو! خمنت الرقم الصحيح +${reward} XP`, "gold");
             targetNumber = Math.floor(Math.random() * currentMaxGuess) + 1;
             document.getElementById('guess-input').value = "";
-        } else { notify(val > targetNumber ? "الرقم أقل 📉" : "الرقم أكبر 📈", "error"); }
+        } else { notify(val > targetNumber ? "الرقم المخفي أقل 📉" : "الرقم المخفي أكبر 📈", "error"); }
+    }
+
+    // لعبة الذاكرة البصرية الجديدة
+    function startMemoryGame() {
+        memorySequence = Math.floor(1000 + Math.random() * 9000).toString();
+        let display = document.getElementById('memory-display');
+        display.innerText = memorySequence;
+        document.getElementById('memory-start-btn').classList.add('hidden');
+        
+        setTimeout(() => {
+            display.innerText = "****";
+            document.getElementById('memory-input').classList.remove('hidden');
+            document.getElementById('memory-check-btn').classList.remove('hidden');
+        }, 2000);
+    }
+    function checkMemory() {
+        let val = document.getElementById('memory-input').value.trim();
+        if(val === memorySequence) {
+            addXP(80);
+            notify("رائع جداً، ذاكرة حديدية! +80 XP", "gold");
+        } else {
+            notify("خطأ، لم تتذكر الأرقام جيداً", "error");
+        }
+        document.getElementById('memory-input').value = "";
+        document.getElementById('memory-input').classList.add('hidden');
+        document.getElementById('memory-check-btn').classList.add('hidden');
+        document.getElementById('memory-start-btn').classList.remove('hidden');
+        document.getElementById('memory-display').innerText = "اضغط للبدء";
+    }
+
+    // لعبة سباق الكتابة الجديدة
+    const typingWords = ["تحدي", "منصة", "ذكاء", "سرعة", "ألعاب", "نجاح", "مهارة"];
+    let currentTypingWord = "";
+    function initTypingGame() {
+        currentTypingWord = typingWords[Math.floor(Math.random() * typingWords.length)];
+        document.getElementById('typing-target').innerText = currentTypingWord;
+        document.getElementById('typing-input').value = "";
+    }
+    function checkTypingRace() {
+        let val = document.getElementById('typing-input').value.trim();
+        if(val === currentTypingWord) {
+            addXP(40);
+            notify("سريع! +40 XP", "gold");
+            initTypingGame();
+        }
     }
 
     function renderLeaderboard() {
-        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
         let tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
         Object.entries(db).sort((a,b)=>b[1].xp - a[1].xp).forEach(([name, user], idx) => {
@@ -434,18 +549,63 @@
     }
 
     function renderAdminPanel() {
-        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
         let tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
         let query = document.getElementById('admin-search-input').value.toLowerCase();
+        
+        let totalUsers = Object.keys(db).length;
+        let topXp = 0;
+        Object.values(db).forEach(u => { if(u.xp > topXp) topXp = u.xp; });
+        document.getElementById('admin-total-users').innerText = totalUsers;
+        document.getElementById('admin-top-xp').innerText = topXp;
+
         for(let name in db) {
             if(query && !name.toLowerCase().includes(query)) continue;
-            tbody.innerHTML += `<tr><td>${name}</td><td>${db[name].xp} XP</td><td><button class="cyber-btn btn-gold" style="padding:4px;font-size:0.7rem;width:auto;" onclick="adminAdd('${name}')">+500</button></td></tr>`;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${name}</td>
+                    <td style="color:var(--gold);">${db[name].xp} XP</td>
+                    <td>مستوى ${db[name].level || 1}</td>
+                    <td>
+                        <button class="cyber-btn btn-gold" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', 500)">+500</button>
+                        <button class="cyber-btn btn-danger" style="padding:4px 8px;font-size:0.75rem;width:auto;" onclick="adminAddXP('${name}', -500)">-500</button>
+                    </td>
+                </tr>`;
         }
     }
-    function adminAdd(name) {
-        let db = JSON.parse(localStorage.getItem('gw_users')) || {};
-        if(db[name]) { db[name].xp += 500; localStorage.setItem('gw_users', JSON.stringify(db)); updateUI(); renderAdminPanel(); }
+
+    function adminAddXP(name, amount) {
+        let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+        if(db[name]) {
+            db[name].xp += amount;
+            if(db[name].xp < 0) db[name].xp = 0;
+            db[name].level = Math.floor(db[name].xp / 1000) + 1;
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
+            if(currentUser.name === name) {
+                currentUser.xp = db[name].xp;
+                currentUser.level = db[name].level;
+                updateUI();
+            }
+            renderAdminPanel();
+            notify(`تم تعديل رصيد ${name} بنجاح`, "gold");
+        }
+    }
+
+    function adminResetAllData() {
+        if(confirm("هل أنت متأكد من تصفير نقاط جميع اللاعبين؟")) {
+            let db = JSON.parse(localStorage.getItem('gw_users_v2')) || {};
+            for(let name in db) {
+                if(name !== 'timassa') {
+                    db[name].xp = 0;
+                    db[name].level = 1;
+                }
+            }
+            localStorage.setItem('gw_users_v2', JSON.stringify(db));
+            updateUI();
+            renderAdminPanel();
+            notify("تم تصفير النقاط بنجاح", "error");
+        }
     }
 </script>
 </body>
