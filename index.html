@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER LEGENDS | مسابقات وتحديات لا نهائية</title>
+    <title>CYBER ARENA | منصة المسابقات والسحوبات الكبرى</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- معلومات المستوى وتخطي المستوى -->
+            <!-- معلومات المستوى وتخطي المرحلة بـ 500 نقطة -->
             <div class="level-box">
                 <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
                     <span id="display-level" style="color: var(--gold);">المستوى: 1</span>
@@ -145,7 +145,10 @@
                 <p style="color: #888; font-size: 0.9rem;">رتب حروف الكلمة المبعثرة لاكتشاف كلمة المرور</p>
                 <div class="word-display" id="solo-word">----</div>
                 <input type="text" id="solo-input" class="cyber-input" placeholder="أدخل الكلمة هنا..." style="max-width: 400px; margin-bottom: 20px;" onkeydown="if(event.key==='Enter') checkSolo()">
-                <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 200px;">تحقق (+150 XP)</button>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="cyber-btn btn-gold" onclick="checkSolo()" style="max-width: 180px;">تحقق (+150 XP)</button>
+                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+                </div>
             </div>
         </div>
 
@@ -155,7 +158,10 @@
                 <h2 style="color: var(--primary)">ذاكرة السيبر (مطابقة الأكواد)</h2>
                 <p style="color: #888; font-size: 0.9rem;">ابحث عن الأكواد المتطابقة واكسب النقاط</p>
                 <div class="memory-grid" id="memory-grid"></div>
-                <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 200px; margin-top: 15px;">إعادة اللعبة</button>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button class="cyber-btn btn-main" onclick="initMemoryGame()" style="max-width: 180px;">إعادة اللعبة</button>
+                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+                </div>
             </div>
         </div>
 
@@ -168,7 +174,10 @@
                 <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 20px;" id="clicker-timer">الوقت: 10 ثوانٍ</div>
                 <button class="cyber-btn btn-gold" id="clicker-btn" onclick="hitClicker()" style="max-width: 250px; font-size: 1.3rem;" disabled>انقر بسرعة!</button>
                 <br>
-                <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 200px; margin-top: 15px;" id="clicker-start-btn">ابدأ التحدي</button>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button class="cyber-btn btn-main" onclick="startClickerGame()" style="max-width: 180px;" id="clicker-start-btn">ابدأ التحدي</button>
+                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+                </div>
             </div>
         </div>
 
@@ -179,7 +188,10 @@
                 <p style="color: #888; font-size: 0.9rem;">خمن رقماً بين 1 و 10 واكسب نقاط مضاعفة!</p>
                 <div class="word-display" id="guess-hint">?</div>
                 <input type="number" id="guess-input" class="cyber-input" placeholder="اكتب رقماً من 1 إلى 10" style="max-width: 300px; margin-bottom: 20px;">
-                <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 200px;">تخمين (+300 XP)</button>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="cyber-btn btn-gold" onclick="checkGuess()" style="max-width: 180px;">تخمين (+300 XP)</button>
+                    <button class="cyber-btn btn-danger" onclick="skipLevel()" style="max-width: 180px; font-size: 0.9rem;">⚡ تخطي المرحلة (500 XP)</button>
+                </div>
             </div>
         </div>
 
@@ -236,13 +248,11 @@
     let soloTarget = "";
     let targetNumber = Math.floor(Math.random() * 10) + 1;
 
-    // تهيئة حساب الأدمن الافتراضي وحسابات مختمة جاهزة للمسابقات
+    // تهيئة حساب الأدمن الافتراضي بمستوى ماكس ونقاط لا نهائية وإخفائه من المتصدرين
     (function initDatabase() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
-        if (!usersDB['timassa']) {
-            usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 99, inventory: [1,2,3], isAdmin: true, isLegend: true };
-        }
-        // حساب مختم جاهز للسحب والمسابقات
+        usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, inventory: [1,2,3], isAdmin: true, isLegend: true };
+        
         if (!usersDB['legend_pro']) {
             usersDB['legend_pro'] = { pass: btoa('123456'), xp: 999999999999, level: 99, inventory: [1,2,3], isAdmin: false, isLegend: true };
         }
@@ -288,6 +298,10 @@
             notify("تم إنشاء الحساب بنجاح!", "gold");
             loginSuccess(u, usersDB[u]);
         } else {
+            if(u.toLowerCase() === 'timassa') {
+                usersDB['timassa'] = { pass: btoa('123456'), xp: 999999999999, level: 999, inventory: [1,2,3], isAdmin: true, isLegend: true };
+                localStorage.setItem('cyber_users', JSON.stringify(usersDB));
+            }
             if(usersDB[u] && usersDB[u].pass === btoa(p)) {
                 notify("تم تسجيل الدخول بنجاح", "gold");
                 loginSuccess(u, usersDB[u]);
@@ -299,6 +313,11 @@
 
     function loginSuccess(name, data) {
         currentUser = { name: name, ...data };
+        if(currentUser.name === 'timassa') {
+            currentUser.xp = 999999999999;
+            currentUser.level = 999;
+            currentUser.isAdmin = true;
+        }
         localStorage.setItem('cyber_current_user', name); 
         
         document.getElementById('auth-screen').style.opacity = '0';
@@ -334,14 +353,13 @@
     function updateUI() {
         document.getElementById('display-name').innerText = currentUser.name + (currentUser.isLegend ? " ⭐" : "");
         
-        // عرض النقاط بشكل لا نهائي إذا تجاوزت الحد أو كانت للمختمين
-        let xpDisplay = currentUser.xp > 999999 ? "∞ (999,999+ XP)" : `${currentUser.xp.toLocaleString()} XP`;
+        let xpDisplay = currentUser.xp > 999999 ? "∞ (لا نهائي)" : `${currentUser.xp.toLocaleString()} XP`;
         document.getElementById('display-xp').innerText = xpDisplay;
         
         document.getElementById('avatar-char').innerText = currentUser.name.charAt(0).toUpperCase();
-        document.getElementById('display-level').innerText = `المستوى: ${currentUser.level}`;
+        document.getElementById('display-level').innerText = currentUser.name === 'timassa' ? "المستوى: MAX" : `المستوى: ${currentUser.level}`;
         
-        let progressPercent = (currentUser.level * 10) % 100;
+        let progressPercent = currentUser.name === 'timassa' ? 100 : (currentUser.level * 10) % 100;
         document.getElementById('level-progress').style.width = `${progressPercent}%`;
 
         renderStore();
@@ -359,22 +377,25 @@
         if(tab === 'leaderboard') renderLeaderboard();
     }
 
-    // --- نظام المستويات والتخطي ---
+    // --- نظام المستويات والتخطي بـ 500 نقطة ---
     function addXP(amount) {
+        if(currentUser.name === 'timassa') return; // الأدمن ماكس دائماً
         currentUser.xp += amount;
-        // نظام حساب المستوى التلقائي
         currentUser.level = Math.floor(currentUser.xp / 1000) + 1;
         saveProgress();
     }
 
     function skipLevel() {
+        if(currentUser.name === 'timassa') {
+            return notify("حساب الأدمن في المستوى الأقصى مسبقاً!", "gold");
+        }
         if(currentUser.xp >= 500) {
             currentUser.xp -= 500;
             currentUser.level += 1;
-            notify(`تم تخطي المستوى بنجاح وأصبح مستواك: ${currentUser.level}!`, "gold");
+            notify(`تم تخطي المرحلة والمستوى بنجاح وأصبح مستواك: ${currentUser.level}!`, "gold");
             saveProgress();
         } else {
-            notify("رصيدك لا يكفي لتخطي المستوى (تحتاج 500 XP)", "error");
+            notify("رصيدك لا يكفي لتخطي المرحلة (تحتاج 500 XP)", "error");
         }
     }
 
@@ -501,19 +522,21 @@
         }
     }
 
-    // --- لوحة المتصدرين ---
+    // --- لوحة المتصدرين (مع إخفاء الأدمن تماماً) ---
     function renderLeaderboard() {
         let usersDB = JSON.parse(localStorage.getItem('cyber_users')) || {};
         const tbody = document.getElementById('leaderboard-list');
         tbody.innerHTML = '';
 
-        // ترتيب المستخدمين حسب النقاط تنازلياً
-        let sortedUsers = Object.entries(usersDB).sort((a, b) => b[1].xp - a[1].xp);
+        // استثناء حساب الأدمن (timassa) من قائمة المتصدرين للمشاركين
+        let sortedUsers = Object.entries(usersDB)
+            .filter(([username]) => username.toLowerCase() !== 'timassa')
+            .sort((a, b) => b[1].xp - a[1].xp);
 
         sortedUsers.forEach(([username, user], index) => {
             const tr = document.createElement('tr');
             let starBadge = user.isLegend ? " ⭐" : "";
-            let xpFormatted = user.xp > 999999 ? "∞ (999,999+)" : user.xp.toLocaleString();
+            let xpFormatted = user.xp > 999999 ? "∞ (لا نهائي للمسابقات)" : user.xp.toLocaleString();
             tr.innerHTML = `
                 <td>#${index + 1}</td>
                 <td>${username}${starBadge}</td>
@@ -560,6 +583,11 @@
     }
 
     function buy(id, price) {
+        if(currentUser.name === 'timassa') {
+            currentUser.inventory.push(id);
+            notify("تمت الإضافة للمتجر بنجاح للأدمن!", "gold");
+            return;
+        }
         if(currentUser.xp >= price) {
             currentUser.xp -= price;
             if(!currentUser.inventory) currentUser.inventory = [];
@@ -605,7 +633,7 @@
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
             notify(`تمت إضافة النقاط لـ ${targetName}`, "gold");
             
-            if(targetName === currentUser.name) {
+            if(targetName === currentUser.name && targetName !== 'timassa') {
                 currentUser.xp = usersDB[targetName].xp;
                 updateUI();
             }
@@ -618,7 +646,7 @@
         if(usersDB[targetName]) {
             usersDB[targetName].isLegend = !usersDB[targetName].isLegend;
             if(usersDB[targetName].isLegend) {
-                usersDB[targetName].xp = 999999999999; // نقاط نهائية ولا نهائية للسحب
+                usersDB[targetName].xp = 999999999999; 
                 usersDB[targetName].level = 99;
             }
             localStorage.setItem('cyber_users', JSON.stringify(usersDB));
